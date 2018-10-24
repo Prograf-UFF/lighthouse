@@ -62,6 +62,11 @@ def print_array(label, list_):
     print("-----------------------------------------------------")
 
 
+def draw_line(limits, line, color):
+    xx, yy = getPlotBoundsLine(limits, line)
+    plot(xx, yy, color)
+
+
 def get_vanish_line(limits, p1, p2, draw_=True):
     line = np.cross(p1, p2)  # line is [p0 p1 1] x [q0 q1 1]
     if draw_:
@@ -177,7 +182,10 @@ def rotateHToLine(H, line):
     assert H.shape[0] == 3 and H.shape[1] == 3
 
     # Compute transformed line = H^-T * l
-    lineTr = np.dot(np.linalg.inv(H).T, line)
+    H_T = np.linalg.inv(H).T
+    lineTr = np.dot(H_T, line)
+    print_array("H_T", H_T )
+    print_array("lineTr", lineTr )
 
     # Rotate so that this line is horizonal in the image
     r1 = np.array([lineTr[1], -lineTr[0]]) # First row of R is perpendicular to linesTr[0]
@@ -187,7 +195,7 @@ def rotateHToLine(H, line):
         R = np.array([[r1[0],  r1[1]], [-r1[1], r1[0]]])
     else:
         R = np.identity(2)
-        #R = np.array([[r1[1], -r1[0]], [ r1[0], r1[1]]])
+        # R = np.array([[r1[1], -r1[0]], [ r1[0], r1[1]]])
     theta = np.arctan2(R[1,0], R[1,1])
     print("Rotating by %.1f degrees" % (theta*180/pi))
     HR = np.identity(3)
@@ -204,8 +212,10 @@ def rotateHToLine(H, line):
 def getHCorners(H, limits):
     Ny = float(limits[0])
     Nx = float(limits[1])
+    print("H:", H, "asdads:",np.array([0.0, Ny, 1.0]).flatten(1))
     # Apply H to corners of the image to determine bounds
     Htr = np.dot(H, np.array([0.0, Ny, 1.0]).flatten(1))  # Top left maps to here
+    print("Htr", Htr, )
     Hbr = np.dot(H, np.array([Nx, Ny, 1.0]).flatten(1))  # Bottom right maps to here
     Hbl = np.dot(H, np.array([Nx, 0.0, 1.0]).flatten(1))  # Bottom left maps to here
     Hcor = [Htr, Hbr, Hbl]
@@ -216,6 +226,7 @@ def getHCorners(H, limits):
         if y[2] == 0:
             finite = False
 
+    print_array("Hcor",Hcor)
     return Hcor, finite
 
 
@@ -240,7 +251,7 @@ def translateHToPosQuadrant(H, limits):
 
     # Min coordinates of H * image corners
     minc = [min([Hcor[j][i]/Hcor[j][2] for j in range(len(Hcor))]) for i in range(2)]
-
+    print_array("minc", minc)
     # Choose translation
     HT = np.identity(3)
     HT[0,2] = -minc[0]
@@ -270,6 +281,7 @@ def scaleHToImage(H, limits, anisotropic=False):  # TODO: test anisotropic
 
     # Maximum coordinate that any corner maps to
     k = [max([Hcor[j][i] / Hcor[j][2] for j in range(len(Hcor))]) / float(limits[1 - i]) for i in range(2)];
+    print_array("k", k)
 
     # Scale
     if anisotropic:
@@ -279,12 +291,12 @@ def scaleHToImage(H, limits, anisotropic=False):  # TODO: test anisotropic
         k = max(k)
         print("Scaling by %f\n" % k)
         HS = np.array([[1.0 / k, 0.0, 0.0], [0.0, 1.0 / k, 0.0], [0.0, 0.0, 1.0]])
-
+    print_array("HS", HS)
     return np.dot(HS, H)
 
 
-def create_image(shape):
-    img = np.zeros([shape[0], shape[1], 3])
+def create_image(shape, dtype, nchanels):
+    img = np.zeros([shape[0], shape[1], nchanels], dtype=dtype)
     r, g, b = cv2.split(img)
     img_bgr = cv2.merge([b, g, r])
     return img_bgr

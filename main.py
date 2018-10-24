@@ -7,7 +7,8 @@ if __name__ == "__main__":
     img = 'exemplo1.jpg'
 
     rectAffine = RectifyAffine(path=path, image=img)
-    rectAffine.get_perspective_transform(True, True, True)
-    # print(np.cross([1, 3, 1], [2, 4, 1]))
+    #rectAffine.get_perspective_transform(1, 1, 1)
+    rectAffine.matrix_h()
+
     print("Finished...!")
 
