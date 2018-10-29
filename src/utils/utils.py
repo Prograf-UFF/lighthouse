@@ -6,6 +6,7 @@ import numpy as np
 import os
 import pprint
 import sys
+from texttable import Texttable
 sys.path.append('/usr/local/lib/python3.6/site-packages')
 import cv2
 
@@ -67,8 +68,9 @@ def draw_line(limits, line, color):
     plot(xx, yy, color)
 
 
-def get_vanish_line(limits, p1, p2, draw_=True):
-    line = np.cross(p1, p2)  # line is [p0 p1 1] x [q0 q1 1]
+def get_vanish_line(limits, draw_=True):
+    plt.suptitle('Clique dois pontos para gerar a "Vanish Line"')
+    _, _, line = get_line()
     if draw_:
         xx, yy = getPlotBoundsLine(limits, line)
         plot(xx, yy, 'r-')
@@ -116,187 +118,129 @@ def getPlotBoundsLine(size, l):
     return xx, yy
 
 
-# --------- Supporting functions -----------
-# Plot image, lines, vanishing points, vanishing line
-def replot_affine(im, limits, lines=[[], []], x=[[], []], y=[[], []], vPts=[]):
-    # -- Settings for this function ---
-    plot_lines = True
-    plot_vpts = True
-    # ---------------------------------
-    plt.close()  # ginput does not allow new points to be plotted
-    imshow(im, cmap='gray')
-    axis('image')
-    ax = plt.gca()
-    xmin, xmax = ax.get_xlim()
-    ymin, ymax = ax.get_ylim()
-
-    # Determine how many lines to plot in red, leaving the last in green if the second needs to be picked
-    nl1 = len(y[0])
-    nl2 = len(y[1])
-    if nl1 == nl2:
-        nred = nl1
-    else:
-        nred = nl1 - 1
-    # Plot extension of user-selected lines (dashed)
-    if plot_lines:
-        for k in range(nred):
-            xx, yy = getPlotBoundsLine(limits, lines[0][k])
-            plot(xx, yy, 'w:')
-        if nl1 - nred > 0:
-            xx, yy = getPlotBoundsLine(limits, lines[0][nl1 - 1])
-            plot(xx, yy, 'g:')
-            # print("line?:", xx, yy)
-        for l in lines[1]:
-            xx, yy = getPlotBoundsLine(limits, l)
-            plot(xx, yy, 'k:')
-
-    # Compute normalized vanishing points for plotting
-    vPts_n = [[0, 0] for x in vPts]
-    vPtInImage = [True for x in vPts]
-    for i in range(len(vPts)):
-        if vPts[i][2] == 0:
-            vPtInImage[i] = False
-        else:
-            vPts_n[i][0] = vPts[i][0] / vPts[i][2]
-            vPts_n[i][1] = vPts[i][1] / vPts[i][2]
-            vPtInImage[i] = vPts_n[i][0] < limits[0] and vPts_n[i][0] > 0 and vPts_n[i][1] < limits[1] and vPts_n[i][1] > 0
-    # Plot vanishing points
-    if plot_vpts:
-        for i in range(len(vPts_n)):
-            if vPtInImage[i]:
-                plot(vPts_n[i][0], vPts_n[i][1], 'yo')
-
-    # Limit axes to the image
-    plt.xlim([xmin, xmax])
-    plt.ylim([ymin, ymax])
-
-
-# INPUTS:
-#   H      = projective transformation
-#   line   = line in the source image (domain of H)
-# OUTPUTS:
-#   HR * H = New H where HR is a rotation chosen to make line map to
-#            either vertical or horizontal, chosen
-def rotateHToLine(H, line):
-    assert len(line) == 3
-    assert H.shape[0] == 3 and H.shape[1] == 3
-
-    # Compute transformed line = H^-T * l
-    H_T = np.linalg.inv(H).T
-    lineTr = np.dot(H_T, line)
-    print_array("H_T", H_T )
-    print_array("lineTr", lineTr )
-
-    # Rotate so that this line is horizonal in the image
-    r1 = np.array([lineTr[1], -lineTr[0]]) # First row of R is perpendicular to linesTr[0]
-    r1 = r1 / np.linalg.norm(r1.flatten(1))
-    theta = np.arctan2(-r1[1] , r1[0])
-    if abs(theta) < pi/4:
-        R = np.array([[r1[0],  r1[1]], [-r1[1], r1[0]]])
-    else:
-        R = np.identity(2)
-        # R = np.array([[r1[1], -r1[0]], [ r1[0], r1[1]]])
-    theta = np.arctan2(R[1,0], R[1,1])
-    print("Rotating by %.1f degrees" % (theta*180/pi))
-    HR = np.identity(3)
-    HR[0:2,0:2] = R
-
-    return np.dot(HR,H)
-
-
-# INPUTS:
-#   H      = perspective transformation (3x3 matrix)
-#   limits = image boundaries
-# OUTPUTS:
-#   Htr,Hbr,Hbl = homogeneous 3-vectors = H * (image corners)
-def getHCorners(H, limits):
-    Ny = float(limits[0])
-    Nx = float(limits[1])
-    print("H:", H, "asdads:",np.array([0.0, Ny, 1.0]).flatten(1))
-    # Apply H to corners of the image to determine bounds
-    Htr = np.dot(H, np.array([0.0, Ny, 1.0]).flatten(1))  # Top left maps to here
-    print("Htr", Htr, )
-    Hbr = np.dot(H, np.array([Nx, Ny, 1.0]).flatten(1))  # Bottom right maps to here
-    Hbl = np.dot(H, np.array([Nx, 0.0, 1.0]).flatten(1))  # Bottom left maps to here
-    Hcor = [Htr, Hbr, Hbl]
-
-    # Check if corners in the transformed image map to infinity finite
-    finite = True
-    for y in Hcor:
-        if y[2] == 0:
-            finite = False
-
-    print_array("Hcor",Hcor)
-    return Hcor, finite
-
-
-# INPUTS:
-#   H      = projective transformation (3x3)
-#   limits = image size
-# OUTPUTS:
-#   HT*H   = new projective transformation such that HT is a translation and
-#            HT*H x > 0 for all x > 0
-def translateHToPosQuadrant(H, limits):
-    assert len(limits) >= 2 # can have color channels
-    assert limits[0] > 0 and limits[1] > 0
-    assert H.shape[0] == 3 and H.shape[1] == 3
-
-    # Get H * image corners
-    Hcor, finite = getHCorners(H, limits)
-
-    # Check if corners map to infinity, if so skip translation
-    if not finite:
-        print("Corners map to infinity, skipping translation")
-        return H
-
-    # Min coordinates of H * image corners
-    minc = [min([Hcor[j][i]/Hcor[j][2] for j in range(len(Hcor))]) for i in range(2)]
-    print_array("minc", minc)
-    # Choose translation
-    HT = np.identity(3)
-    HT[0,2] = -minc[0]
-    HT[1,2] = -minc[1]
-
-    return np.dot(HT, H)
-
-
-# INPUTS:
-#   H      = perspective transformation (3x3 matrix)
-#   limits = image boundaries
-# OUTPUTS:
-#   HS * H, where HS is an (isotropic) scaling to keep an image of shape
-#   limits contained within limits when HS*H is applied
-def scaleHToImage(H, limits, anisotropic=False):  # TODO: test anisotropic
-    assert len(limits) >= 2  # can have color channels
-    assert limits[0] > 0 and limits[1] > 0
-    assert H.shape[0] == 3 and H.shape[1] == 3
-
-    # Get H * image corners
-    Hcor, finite = getHCorners(H, limits)
-
-    # If corners in the transformed image are not finite, don't do scaling
-    if not finite:
-        print("Skipping scaling due to point mapped to infinity")
-        return H;
-
-    # Maximum coordinate that any corner maps to
-    k = [max([Hcor[j][i] / Hcor[j][2] for j in range(len(Hcor))]) / float(limits[1 - i]) for i in range(2)];
-    print_array("k", k)
-
-    # Scale
-    if anisotropic:
-        print("Scaling by (%f,%f)\n" % (k[0], k[1]))
-        HS = np.array([[1. / k[0], 0.0, 0.0], [0.0, 1. / k[1], 0.0], [0.0, 0.0, 1.0]])
-    else:
-        k = max(k)
-        print("Scaling by %f\n" % k)
-        HS = np.array([[1.0 / k, 0.0, 0.0], [0.0, 1.0 / k, 0.0], [0.0, 0.0, 1.0]])
-    print_array("HS", HS)
-    return np.dot(HS, H)
-
 
 def create_image(shape, dtype, nchanels):
     img = np.zeros([shape[0], shape[1], nchanels], dtype=dtype)
     r, g, b = cv2.split(img)
     img_bgr = cv2.merge([b, g, r])
     return img_bgr
+
+
+def my_print(headers, matrix, title=""):
+    cols_align = []
+    cols_m = matrix.shape[1]
+    rows_m = matrix.shape[0]
+    for i in range(0, cols_m):
+        if i == 0:
+            cols_align.append("l")
+        else:
+            cols_align.append("r")
+
+    content = []
+    if headers == []:
+        headers = [chr(x) for x in range(97, 97 + cols_m)]
+    content.append(headers)
+    for i in range(0, rows_m):
+        content.append(matrix[i])
+
+    table = Texttable()
+    table.set_deco(Texttable.HEADER)
+    table.set_header_align(cols_align)
+    table.set_cols_dtype(['a']*cols_m)  # automatic
+    table.set_cols_align(cols_align)
+    table.add_rows(content)
+
+    if title != "":
+        print("**********************" + title + "**********************")
+    print(table.draw())
+
+
+def show_image_properties(img):
+    shape = img.shape
+    header = ["properties", "values"]
+    content = [["width", shape[1]],
+                    ["height", shape[0]],
+                    ["channels", shape[2]],
+                    ["# of pixels", img.size],
+                    ["data type", img.dtype]]
+    my_print(header, np.array(content), "Image Property")
+
+
+def get_point(draw_=True, cor='yo'):
+    plt.suptitle('Clique um ponto ..."')
+    pt = plt.ginput(n=1)
+    c = [pt[0][0], pt[0][1], 1]
+    if draw_:
+        plt.plot(pt[0][0], pt[0][1], cor)
+    return c
+
+
+def get_quadrante(img, draw_=True):
+    plt.suptitle('Clique dois pontos para quadrante ..."')
+    p1 = get_point()
+    p2 = get_point()
+
+    p3 = [p2[0], p1[1]]
+    p4 = [p1[0], p2[1]]
+    if draw_:
+        plt.plot(p3[0], p3[1], 'yo')
+        plt.plot(p4[0], p4[1], 'yo')
+        # print(p1, p2, p3, p4)
+    return p1, p2
+
+
+def add_samples(p1, p2, s_x, s_y, img_canny):
+    x_ini = p1[0]
+    y_ini = p1[1]
+    x_fin = p2[0]
+    y_fin = p2[1]
+    for x in range(int(x_ini), int(x_fin)):
+        for y in range(int(y_ini), int(y_fin)):
+            if img_canny[y, x] != 0:
+                s_x.append([x])
+                s_y.append(y)
+
+
+def get_samples(img_canny):
+    plt.figure(1)
+    imshow(img_canny, cmap='gray')
+    p1, p2 = get_quadrante(img_canny)
+    p3, p4 = get_quadrante(img_canny)
+
+    samples_x = []
+    samples_y = []
+    add_samples(p1, p2, samples_x, samples_y, img_canny)
+    add_samples(p3, p4, samples_x, samples_y, img_canny)
+
+    print("X:", np.array(samples_x).shape)
+    print("y:", np.array(samples_y).shape)
+
+    plt.figure(2)
+    plt.scatter(samples_x, samples_y, label='scikit', color='k')
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.legend()
+    show()
+
+    return np.array(samples_x), np.array(samples_y)
+
+
+def draw_line_ransac(line_x, line_y, img):
+    plt.figure(4)
+    imshow(img)
+
+    plt.plot(line_x, line_y, color='red', linewidth=2,
+             label='RANSAC regressor')
+
+    # get vanishLine
+    p1 = [line_x[0][0], line_y[0], 1]
+    p2 = [line_x[len(line_y)-1][0], line_y[len(line_y)-1], 1]
+
+    vLine = np.cross(p1, p2)
+
+    xx, yy = getPlotBoundsLine(img.shape, vLine)
+    plot(xx, yy, 'g-', linewidth=1)
+    axis('image')
+
+    show()
+    return vLine
