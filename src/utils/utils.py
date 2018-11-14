@@ -7,6 +7,11 @@ import os
 import pprint
 import sys
 from texttable import Texttable
+from src.utils.ransac import *
+from src.utils.otsu import *
+from src.utils.canny import *
+import scipy
+
 sys.path.append('/usr/local/lib/python3.6/site-packages')
 import cv2
 
@@ -151,7 +156,7 @@ def my_print(headers, matrix, title=""):
     table.add_rows(content)
 
     if title != "":
-        print("**********************" + title + "**********************")
+        print("**********************  " + title + "  **********************")
     print(table.draw())
 
 
@@ -183,8 +188,8 @@ def get_quadrante(img, draw_=True):
     p3 = [p2[0], p1[1]]
     p4 = [p1[0], p2[1]]
     if draw_:
-        plt.plot(p3[0], p3[1], 'yo')
-        plt.plot(p4[0], p4[1], 'yo')
+        plt.plot(p3[0], p3[1], 'ro')
+        plt.plot(p4[0], p4[1], 'ro')
         # print(p1, p2, p3, p4)
     return p1, p2
 
@@ -201,36 +206,28 @@ def add_samples(p1, p2, s_x, s_y, img_canny):
                 s_y.append(y)
 
 
-def get_samples(img_canny):
-    plt.figure(1)
-    imshow(img_canny, cmap='gray')
+def get_samples(img_canny, show_scatter=False):
     p1, p2 = get_quadrante(img_canny)
     p3, p4 = get_quadrante(img_canny)
+    plt.suptitle('Wait ..."')
 
     samples_x = []
     samples_y = []
     add_samples(p1, p2, samples_x, samples_y, img_canny)
     add_samples(p3, p4, samples_x, samples_y, img_canny)
 
-    print("X:", np.array(samples_x).shape)
-    print("y:", np.array(samples_y).shape)
-
-    plt.figure(2)
-    plt.scatter(samples_x, samples_y, label='scikit', color='k')
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.legend()
-    show()
+    if show_scatter:
+        plt.figure(2)
+        plt.scatter(samples_x, samples_y, label='samples', color='k')
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.legend()
 
     return np.array(samples_x), np.array(samples_y)
 
 
 def draw_line_ransac(line_x, line_y, img):
-    plt.figure(4)
-    imshow(img)
-
-    plt.plot(line_x, line_y, color='red', linewidth=2,
-             label='RANSAC regressor')
+    # plt.plot(line_x, line_y, color='red', linewidth=2, label='RANSAC regressor')
 
     # get vanishLine
     p1 = [line_x[0][0], line_y[0], 1]
@@ -240,7 +237,124 @@ def draw_line_ransac(line_x, line_y, img):
 
     xx, yy = getPlotBoundsLine(img.shape, vLine)
     plot(xx, yy, 'g-', linewidth=1)
-    axis('image')
-
-    show()
     return vLine
+
+
+def get_vanishLine_manual(img, show_samples=False, show_ransac=False):
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    detect_border = get_canny(img_gray)
+    sx, sy = get_samples(detect_border, show_scatter=show_samples)
+    line_X, line_y_ransac, _ = ransac(sx, sy, show_=show_ransac)
+
+    plt.figure(1)
+    # plt.cla()  # Clear axis
+    plt.clf()  # Clear figure
+    # plt.close()  # Close a figure window
+    imshow(img, cmap='gray')
+    axis('image')
+    vLine = draw_line_ransac(line_X, line_y_ransac, img)
+    return vLine
+
+
+def get_vanishLine_automatic(img, image_base_path="src/images/base/", img_vline="img_to_get_vLine.jpg"):
+    img_canny = cv2.imread(image_base_path + img_vline, 0)
+    # puntos sacados manualmente
+    p1, p2 = [271, 507, 1], [682, 558, 1]
+    p3, p4 = [858, 495, 1], [1015, 549, 1]
+    samples_x = []
+    samples_y = []
+    add_samples(p1, p2, samples_x, samples_y, img_canny)
+    add_samples(p3, p4, samples_x, samples_y, img_canny)
+    line_X, line_y_ransac, _ = ransac(np.array(samples_x), np.array(samples_y), show_=False)
+
+    vLine = draw_line_ransac(line_X, line_y_ransac, img)
+    return vLine
+
+def distance_euclidean(v1, v2):
+    return np.sqrt(np.sum((np.array(v1) - np.array(v2)) ** 2))
+
+
+def img_grayscale(img_rgb):
+    r, g, b = cv2.split(img_rgb)
+    image_bgr = cv2.merge([b, g, r])
+    gray_image = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
+    return gray_image
+
+
+def negativo_grises(im):
+    im_gray = img_grayscale(im)
+    im5 = create_image(im.shape, im.dtype, 3)
+    i = 0
+    while i < im_gray.shape[0]:
+        j = 0
+        while j < im_gray.shape[1]:
+            gris = im_gray[i,j]  # como es gris no importa
+            valor = 255 - gris
+            im5[i, j] = [valor, valor, valor]
+            j+=1
+        i+=1
+    return im5
+
+def use_erode_dilate(image):
+    kernel_erode = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    kernel_dilate = cv2.getStructuringElement(cv2.MORPH_RECT, (6, 6))
+    erode = cv2.erode(image, kernel_erode)
+    dilate = cv2.dilate(erode, kernel_dilate)
+
+    return dilate
+
+# --- AQUI SEGMENTAMOS EL CIELO --------
+def segment_sky(image_base_path, img, img_save_neg="negative.jpg", img_save_otsu="/segment_sky.jpg"):
+    my_img = image_read(image_base_path, img)
+    neg_cor = negativo_grises(my_img)
+    plt.imsave(image_base_path + "/" + img_save_neg, neg_cor)
+    result = otsu(image_base_path, img_save_neg)
+    erode_dilate = use_erode_dilate(result)
+    cv2.imwrite(image_base_path + img_save_otsu, erode_dilate)
+    cv2.imshow("sky", erode_dilate)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+def img_to_get_vLine(image_base_path, img_sky="segment_sky.jpg"):
+    img_gray = cv2.imread(image_base_path + img_sky, 0)
+    result = get_canny(img_gray, 60)
+    cv2.imwrite(image_base_path + "/img_to_get_vLine.jpg", result)
+
+# ---------------- GET DIRECTION --------------
+def get_direction(img):
+    plt.imshow(img, cmap='gray')
+    # p1, p2 = get_quadrante(img)
+    p1, p2 = [0.0, 0.0],[img.shape[1], img.shape[0]]
+    samples_x = []
+    samples_y = []
+    add_samples(p1, p2, samples_x, samples_y, img)
+
+    if True:
+        plt.figure(2)
+        plt.scatter(samples_x, samples_y, label='samples', color='k')
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.legend()
+
+    line_X_pri, line_y_ransac_pri, outliers = ransac(np.array(samples_x), np.array(samples_y), show_=True, figure_num=7)
+    print(len(outliers), len(samples_x))
+
+    # segunda linea
+    # calcular outliers que pertenecen a samples
+    new_sx = []
+    new_sy = []
+    for i in range(0, len(outliers)):
+        if outliers[i]:
+            new_sx.append(samples_x[i])
+            new_sy.append(samples_y[i])
+    line_X_sec, line_y_ransac_sec, _ = ransac(np.array(new_sx), np.array(new_sy), show_=True, figure_num=8)
+
+    plt.figure(9)
+    img_original = image_read('src/images/save_images/', 'exemplo5.jpg')
+    plt.imshow(img_original, cmap='gray')
+
+    plt.plot(line_X_pri, line_y_ransac_pri, color='red', linewidth=1)
+    plt.plot(line_X_sec, line_y_ransac_sec, color='green', linewidth=1)
+
+    plt.show()

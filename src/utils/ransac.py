@@ -4,8 +4,7 @@ from matplotlib import pyplot as plt
 from sklearn import linear_model, datasets
 
 
-def ransac(sample_x, sample_y):
-    plt.figure(3)
+def ransac(sample_x, sample_y, show_=False, figure_num=3):
     X, y = sample_x, sample_y
     # Robustly fit linear model with RANSAC algorithm
     ransac = linear_model.RANSACRegressor()
@@ -17,19 +16,20 @@ def ransac(sample_x, sample_y):
     line_X = np.arange(X.min(), X.max())[:, np.newaxis]
     line_y_ransac = ransac.predict(line_X)
 
-    lw = 2
-    plt.scatter(X[inlier_mask], y[inlier_mask], color='yellowgreen', marker='.',
-                label='Inliers')
-    plt.scatter(X[outlier_mask], y[outlier_mask], color='gold', marker='.',
-                label='Outliers')
-    plt.plot(line_X, line_y_ransac, color='cornflowerblue', linewidth=lw,
-             label='RANSAC regressor')
-    plt.legend(loc='lower right')
-    plt.xlabel("Input")
-    plt.ylabel("Response")
-    plt.show()
+    if show_:
+        plt.figure(figure_num)
+        lw = 2
+        plt.scatter(X[inlier_mask], y[inlier_mask], color='yellowgreen', marker='.',
+                    label='Inliers')
+        plt.scatter(X[outlier_mask], y[outlier_mask], color='gold', marker='.',
+                    label='Outliers')
+        plt.plot(line_X, line_y_ransac, color='cornflowerblue', linewidth=lw,
+                 label='RANSAC regressor')
+        plt.legend(loc='lower right')
+        plt.xlabel("Input")
+        plt.ylabel("Response")
 
-    return line_X, line_y_ransac
+    return line_X, line_y_ransac, outlier_mask
 
 
 def main_ransac():

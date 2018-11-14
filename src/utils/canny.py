@@ -19,25 +19,15 @@ def single_band_representation(img):
 
 
 # imagen a escala de grises
-def get_canny(img):
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    lowThreshold = 45
-    max_lowThreshold = 135
+def get_canny(img_gray, limiar=45):
+    lowThreshold = limiar  # 66/45
+    max_lowThreshold = limiar*3  # 198/135
     kernel_size = 3
     # Reduce noise with a kernel 3x3
-    detected_edges = cv2.blur(img, (3, 3))
+    detected_edges = cv2.blur(img_gray, (3, 3))
 
     # Canny detector
     detected_edges = cv2.Canny(detected_edges, lowThreshold, max_lowThreshold, kernel_size)
-
-    '''cv2.imshow("Original", detected_edges)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    return'''
-    '''plt.imshow(detected_edges, cmap='gray')
-    plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
-    plt.show()'''
-
     return detected_edges
 
 
@@ -46,12 +36,12 @@ def empty(x):
     pass
 
 
-def main_canny(path, image):
+def main_canny(path, image, l_limiar=0):
     src, src_gray = [], []
     dst, detected_edges = [], []
 
     edgeThresh = 1
-    lowThreshold = 0
+    lowThreshold = l_limiar
     max_lowThreshold = 100
     ratio = 3
     kernel_size = 3
@@ -65,11 +55,11 @@ def main_canny(path, image):
     # cv2.imshow("Original", src)
 
     # Create a matrix of the same type and size as src(for dst)
-    dst = create_image(src.shape, src.dtype, 3)
+    # dst = create_image(src.shape, src.dtype, 3)
 
     # Convert the image to grayscale
     src_gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
-    cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+    cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
 
     # Create a Trackbar for user to enter threshold
     cv2.createTrackbar("Min Threshold:", window_name, lowThreshold, max_lowThreshold, empty)

@@ -3,6 +3,8 @@ import matplotlib.image as mplimg
 from pylab import plot, ginput, show, axis, imshow, draw
 import matplotlib.pyplot as plt
 from ..utils.utils import *
+from ..utils.ransac import *
+from ..utils.canny import *
 sys.path.append('/usr/local/lib/python3.6/site-packages')
 import cv2
 
@@ -13,6 +15,7 @@ class RectifyAffine:
     def __init__(self, path, image):
         self.path = path
         self.image = image
+        self.image_save = path + "save_images/" + image
 
     @staticmethod
     def system_of_equations(c_, d_, e_, limit_x_, limit_y_):
@@ -62,8 +65,11 @@ class RectifyAffine:
 
         # Create figure
         plt.figure(1)
-        vLine = get_vanish_line(im.shape)
-
+        #vLine = get_vanishLine_manual(im, False, False)
+        vLine = get_vanishLine_automatic(im)
+        #vLine = get_vanish_line(im.shape)
+        #show()
+        #return
         # Create a Homographic matrix
         H = np.identity(3)
         H[2, 0] = vLine[0]
@@ -87,9 +93,9 @@ class RectifyAffine:
         d_ = [x/d_[2] for x in d_]
         e_ = [x/e_[2] for x in e_]
 
-        #d_ = np.dot(M, d)
-        limit_x_ = 600
-        limit_y_ = 600
+        # Limites de la nueva imagen
+        limit_x_ = int(distance_euclidean(c, d))
+        limit_y_ = int(distance_euclidean(c, e))
 
         A = self.system_of_equations(c_, d_, e_, limit_x_, limit_y_)
         my_print([], np.array(A), "A")
@@ -115,7 +121,7 @@ class RectifyAffine:
 
         limit_x = im.shape[1]
         limit_y = im.shape[0]
-        plt.figure(2)
+        plt.figure(4)
 
         im_result = create_image([limit_y_,limit_x_], im.dtype, im.ndim)
         for x_ in range(0, limit_x_):
@@ -127,6 +133,7 @@ class RectifyAffine:
                     if (0 <= x < limit_x) and (0 <= y < limit_y):
                         im_result[y_, x_] = im[y, x]
 
-        imshow(im_result)
+        imshow(im_result, interpolation='nearest')
         show()
+        plt.imsave(self.image_save, im_result)
 
