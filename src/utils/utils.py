@@ -172,7 +172,6 @@ def show_image_properties(img):
 
 
 def get_point(draw_=True, cor='yo'):
-    plt.suptitle('Clique um ponto ..."')
     pt = plt.ginput(n=1)
     c = [pt[0][0], pt[0][1], 1]
     if draw_:
@@ -181,7 +180,6 @@ def get_point(draw_=True, cor='yo'):
 
 
 def get_quadrante(img, draw_=True):
-    plt.suptitle('Clique dois pontos para quadrante ..."')
     p1 = get_point()
     p2 = get_point()
 
@@ -325,6 +323,7 @@ def img_to_get_vLine(image_base_path, img_sky="segment_sky.jpg"):
 def get_direction(img, img_orig, get_q_auto=True, show_result=True, show_ransac=True):
     if not get_q_auto:
         plt.imshow(img, cmap='gray')
+        plt.suptitle('Clique dois pontos para pegar a linha "V"')
         p1, p2 = get_quadrante(img)
     else:
         p1, p2 = [0.0, 0.0],[img.shape[1], img.shape[0]]

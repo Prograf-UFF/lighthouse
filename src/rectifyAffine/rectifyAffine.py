@@ -18,7 +18,6 @@ class RectifyAffine:
     def __init__(self, path, image):
         self.path = path
         self.image = image
-        self.image_save = path + "save_images/" + image
         self.my_image = []
 
     @staticmethod
@@ -49,8 +48,8 @@ class RectifyAffine:
         result = []
         for i in range(0, len(a_legenda)):
             x = m_result_[i]
-            o = [a_legenda[i] + "_o"]
-            r = [a_legenda[i] + "_r"]
+            o = [a_legenda[i] + "_original"]
+            r = [a_legenda[i] + "_resultante"]
             for j in range(0, 3):
                 r.append(x[j]/x[2])
                 o.append(m_origin[i][j])
@@ -81,6 +80,7 @@ class RectifyAffine:
 
         my_print([], H, "H")
 
+        plt.suptitle('********* Clique tres pontos para pegar a imagem a ser corrigida *********')
         c = get_point()
         d = get_point()
         e = get_point()
@@ -117,7 +117,7 @@ class RectifyAffine:
         self.test_sanidad(M_,
                           [c, d, e],
                           [[0, 0, 1], [limit_x_ - 1, 0, 1], [0, limit_y_ - 1, 1]],
-                          ["res_c", "res_d", "res_e"])
+                          ["rpt_c", "rpt_d", "rpt_e"])
 
         plt.close(1)
         show()
