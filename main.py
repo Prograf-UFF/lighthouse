@@ -5,11 +5,11 @@ from src.utils.ransac import *
 from src.utils.canny import *
 from src.utils.otsu import *
 from src.utils.sobel import *
-import random
+
 
 if __name__ == "__main__":
     path = 'src/images/'
-    img = 'exemplo6.jpg'
+    img = 'exemplo2.jpg'
 
     rectAffine = RectifyAffine(path=path, image=img)
     # Na função 'X' precisamos de três pontos para delimitar

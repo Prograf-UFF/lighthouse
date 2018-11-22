@@ -69,7 +69,7 @@ class RectifyAffine:
 
         # Create figure
         plt.figure(1)
-        #vLine = get_vanishLine_manual(im, False, False)
+        # vLine = get_vanishLine_manual(im, False, False)
         vLine = get_vanishLine_automatic(im)
 
         # Create a Homographic matrix
@@ -143,22 +143,27 @@ class RectifyAffine:
         # imshow(im_result, interpolation='nearest')
         plt.close(4)
         show()
+        # plt.imsave(self.path + 'img_save/' + self.image, im_result)
         return im_result
 
 
     # Obtemos as linhas de rastro deixadas pelo navio
     def get_lineV(self, img, auto=True, sobel_show=False, show_filtrar_g=False, show_ransac=False):
-        g = sobel_filter(img, 3, sobel_show)
+        image = copy.copy(img)
+        # https://docs.opencv.org/3.0-beta/modules/photo/doc/denoising.html
+        # nós usamos um filtro para eliminar o ruído
+        processed_image = cv2.fastNlMeansDenoisingColored(image, None, 6, 6, 7, 21)
+        g = sobel_filter(processed_image, 3, sobel_show)
         sort_g_tupla = sort_g(g)
         acu_cdf = cdf(sort_g_tupla, False)
 
-        rd = random.uniform(0.75, 0.85)
+        rd = random.uniform(0.82, 0.86)
         xy = get_xy(rd, acu_cdf, sort_g_tupla)
 
-        # print("random #:", rd)
-        # print("g max val:", np.max(g))
-        # print("x,y:", xy)
-        # print("getxy:", g[xy[1], xy[0]])
+        print("random #:", rd)
+        print("g max val:", np.max(g))
+        print("x,y:", xy)
+        print("getxy:", g[xy[1], xy[0]])
 
         copy_g = filtrar_g(g, g[xy[1], xy[0]], show_filtrar_g)
         get_direction(copy_g, img, get_q_auto=auto, show_ransac=show_ransac, show_result=True)
