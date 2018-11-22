@@ -5,8 +5,11 @@ import matplotlib.pyplot as plt
 from ..utils.utils import *
 from ..utils.ransac import *
 from ..utils.canny import *
+from ..utils.sobel import *
+import random
 sys.path.append('/usr/local/lib/python3.6/site-packages')
 import cv2
+import copy
 
 class RectifyAffine:
     # ---------- Settings ---------
@@ -16,6 +19,7 @@ class RectifyAffine:
         self.path = path
         self.image = image
         self.image_save = path + "save_images/" + image
+        self.my_image = []
 
     @staticmethod
     def system_of_equations(c_, d_, e_, limit_x_, limit_y_):
@@ -58,6 +62,7 @@ class RectifyAffine:
 
     def matrix_h(self):
         im = image_read(self.path, self.image)
+        self.my_image = copy.copy(im)
         show_image_properties(im)
         plt.close()  # ginput does not allow new points to be plotted
         imshow(im, cmap='gray')
@@ -67,9 +72,7 @@ class RectifyAffine:
         plt.figure(1)
         #vLine = get_vanishLine_manual(im, False, False)
         vLine = get_vanishLine_automatic(im)
-        #vLine = get_vanish_line(im.shape)
-        #show()
-        #return
+
         # Create a Homographic matrix
         H = np.identity(3)
         H[2, 0] = vLine[0]
@@ -77,9 +80,6 @@ class RectifyAffine:
         H[2, 2] = vLine[2]
 
         my_print([], H, "H")
-        # Compute transformed line = H^-T * l
-        #H_ = np.linalg.inv(H)
-        #print_array("H_T", H_)
 
         c = get_point()
         d = get_point()
@@ -119,21 +119,47 @@ class RectifyAffine:
                           [[0, 0, 1], [limit_x_ - 1, 0, 1], [0, limit_y_ - 1, 1]],
                           ["res_c", "res_d", "res_e"])
 
-        limit_x = im.shape[1]
-        limit_y = im.shape[0]
-        plt.figure(4)
+        plt.close(1)
+        show()
+        return M_, limit_x_, limit_y_
 
-        im_result = create_image([limit_y_,limit_x_], im.dtype, im.ndim)
+    # Obtemos a imagem retificada passando a matriz M_, o tamanho
+    # da imagem resultante é w = limite_x_ e h = limite_y_
+    def image_rectification(self, M_, limit_x_, limit_y_):
+        plt.figure(4)
+        limit_x = self.my_image.shape[1]
+        limit_y = self.my_image.shape[0]
+        im_result = create_image([limit_y_, limit_x_], self.my_image.dtype, self.my_image.ndim)
+
         for x_ in range(0, limit_x_):
             for y_ in range(0, limit_y_):
                 p = np.dot(M_, [x_, y_, 1])
                 if p[2] != 0:
-                    x = int(np.round(p[0]/p[2]))
-                    y = int(np.round(p[1]/p[2]))
+                    x = int(np.round(p[0] / p[2]))
+                    y = int(np.round(p[1] / p[2]))
                     if (0 <= x < limit_x) and (0 <= y < limit_y):
-                        im_result[y_, x_] = im[y, x]
+                        im_result[y_, x_] = self.my_image[y, x]
 
-        imshow(im_result, interpolation='nearest')
+        # imshow(im_result, interpolation='nearest')
+        plt.close(4)
         show()
-        plt.imsave(self.image_save, im_result)
+        return im_result
+
+
+    # Obtemos as linhas de rastro deixadas pelo navio
+    def get_lineV(self, img, auto=True, sobel_show=False, show_filtrar_g=False, show_ransac=False):
+        g = sobel_filter(img, 3, sobel_show)
+        sort_g_tupla = sort_g(g)
+        acu_cdf = cdf(sort_g_tupla, False)
+
+        rd = random.uniform(0.75, 0.85)
+        xy = get_xy(rd, acu_cdf, sort_g_tupla)
+
+        # print("random #:", rd)
+        # print("g max val:", np.max(g))
+        # print("x,y:", xy)
+        # print("getxy:", g[xy[1], xy[0]])
+
+        copy_g = filtrar_g(g, g[xy[1], xy[0]], show_filtrar_g)
+        get_direction(copy_g, img, get_q_auto=auto, show_ransac=show_ransac, show_result=True)
 

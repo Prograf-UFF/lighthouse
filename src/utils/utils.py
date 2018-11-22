@@ -10,7 +10,7 @@ from texttable import Texttable
 from src.utils.ransac import *
 from src.utils.otsu import *
 from src.utils.canny import *
-import scipy
+import copy
 
 sys.path.append('/usr/local/lib/python3.6/site-packages')
 import cv2
@@ -322,22 +322,24 @@ def img_to_get_vLine(image_base_path, img_sky="segment_sky.jpg"):
     cv2.imwrite(image_base_path + "/img_to_get_vLine.jpg", result)
 
 # ---------------- GET DIRECTION --------------
-def get_direction(img):
-    plt.imshow(img, cmap='gray')
-    # p1, p2 = get_quadrante(img)
-    p1, p2 = [0.0, 0.0],[img.shape[1], img.shape[0]]
+def get_direction(img, img_orig, get_q_auto=True, show_result=True, show_ransac=True):
+    if not get_q_auto:
+        plt.imshow(img, cmap='gray')
+        p1, p2 = get_quadrante(img)
+    else:
+        p1, p2 = [0.0, 0.0],[img.shape[1], img.shape[0]]
     samples_x = []
     samples_y = []
     add_samples(p1, p2, samples_x, samples_y, img)
 
-    if True:
+    if False:
         plt.figure(2)
         plt.scatter(samples_x, samples_y, label='samples', color='k')
         plt.xlabel("x")
         plt.ylabel("y")
         plt.legend()
 
-    line_X_pri, line_y_ransac_pri, outliers = ransac(np.array(samples_x), np.array(samples_y), show_=True, figure_num=7)
+    line_X_pri, line_y_ransac_pri, outliers = ransac(np.array(samples_x), np.array(samples_y), show_=show_ransac, figure_num=7)
     print(len(outliers), len(samples_x))
 
     # segunda linea
@@ -348,13 +350,14 @@ def get_direction(img):
         if outliers[i]:
             new_sx.append(samples_x[i])
             new_sy.append(samples_y[i])
-    line_X_sec, line_y_ransac_sec, _ = ransac(np.array(new_sx), np.array(new_sy), show_=True, figure_num=8)
+    line_X_sec, line_y_ransac_sec, _ = ransac(np.array(new_sx), np.array(new_sy), show_=show_ransac, figure_num=8)
 
-    plt.figure(9)
-    img_original = image_read('src/images/save_images/', 'exemplo5.jpg')
-    plt.imshow(img_original, cmap='gray')
+    if show_result:
+        plt.figure(9)
+        img_original = copy.copy(img_orig)
+        plt.imshow(img_original, cmap='gray')
 
-    plt.plot(line_X_pri, line_y_ransac_pri, color='red', linewidth=1)
-    plt.plot(line_X_sec, line_y_ransac_sec, color='green', linewidth=1)
+        plt.plot(line_X_pri, line_y_ransac_pri, color='red', linewidth=1)
+        plt.plot(line_X_sec, line_y_ransac_sec, color='green', linewidth=1)
 
-    plt.show()
+        plt.show()

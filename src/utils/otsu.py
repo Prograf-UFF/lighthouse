@@ -1,11 +1,7 @@
-import sys
 import matplotlib.pyplot as plt
 import math
 from PIL import Image
 import numpy as np
-# to work openCV on python3
-sys.path.append('/usr/local/lib/python3.6/site-packages')
-import cv2
 
 
 # -------------------------OTSU-----------------

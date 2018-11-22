@@ -1,16 +1,18 @@
 import sys
 import numpy as np
 from scipy import signal
-import scipy
-from scipy import ndimage
 import matplotlib.pyplot as plt
 from operator import itemgetter
 sys.path.append('/usr/local/lib/python3.6/site-packages')
 import cv2
+import copy
 
-def sobel_filter(path, image, k_size=3):
-    im = cv2.imread(path + image, 0)
-    img = im.astype('int32')
+def sobel_filter(image, k_size=3, show_=True):
+    #im = cv2.imread(path + image, 0)
+    img = copy.copy(image)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    img = img.astype('int32')
 
     if k_size == 3:
         kh = np.array([[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]], dtype=np.float)
@@ -33,10 +35,11 @@ def sobel_filter(path, image, k_size=3):
     g = np.sqrt(gx * gx + gy * gy)  # magnitude
     #print(g[:3])
     g *= 255.0 / np.max(g)  # normalize (Q&D)
-    print(g.shape)
-    # plt.figure()
-    plt.imshow(g, cmap='gray')
-    plt.show()
+    if show_:
+        print(g.shape)
+        # plt.figure()
+        plt.imshow(g, cmap='gray')
+        plt.show()
 
     return g
 
@@ -91,15 +94,3 @@ def filtrar_g(g, val_limiar, show_=True):
         plt.show()
     return copy_g
 
-# ----------------- SOBEL ----------------
-def sobel(path, image):
-    im = cv2.imread(path + image, 0) #scipy.misc.imread(path + image)
-    im = im.astype('int32')
-    dx = ndimage.sobel(im, 0)  # horizontal derivative
-    dy = ndimage.sobel(im, 1)  # vertical derivative
-    mag = np.hypot(dx, dy)  # magnitude
-    mag *= 255.0 / np.max(mag)  # normalize (Q&D)
-
-    scipy.misc.imsave(path + '/sobel.jpg', mag)
-    plt.imshow(mag, cmap='gray')
-    plt.show()

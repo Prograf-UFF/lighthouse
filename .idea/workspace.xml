@@ -2,13 +2,23 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9693c4a4-a5ca-4267-bb04-46965fafadf9" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/utils/otsu.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/src/utils/sobel.py" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/main.py" afterPath="$PROJECT_DIR$/main.py" />
+      <change beforePath="$PROJECT_DIR$/src/images/ie1_4k.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/src/images/ie2_4k.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/src/images/ie3_4k.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/src/images/ie4_4k.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/src/images/ie5_4k.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/src/images/save_images/exemplo1 copy.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/src/images/save_images/exemplo1.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/src/images/save_images/exemplo3 copy.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/src/images/save_images/exemplo3.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/src/images/save_images/exemplo5.jpg" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/src/images/save_images/sobel.jpg" afterPath="" />
       <change beforePath="$PROJECT_DIR$/src/rectifyAffine/rectifyAffine.py" afterPath="$PROJECT_DIR$/src/rectifyAffine/rectifyAffine.py" />
-      <change beforePath="$PROJECT_DIR$/src/utils/canny.py" afterPath="$PROJECT_DIR$/src/utils/canny.py" />
+      <change beforePath="$PROJECT_DIR$/src/utils/otsu.py" afterPath="$PROJECT_DIR$/src/utils/otsu.py" />
       <change beforePath="$PROJECT_DIR$/src/utils/ransac.py" afterPath="$PROJECT_DIR$/src/utils/ransac.py" />
+      <change beforePath="$PROJECT_DIR$/src/utils/sobel.py" afterPath="$PROJECT_DIR$/src/utils/sobel.py" />
       <change beforePath="$PROJECT_DIR$/src/utils/utils.py" afterPath="$PROJECT_DIR$/src/utils/utils.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -23,11 +33,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="main.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="565">
-              <caret line="40" column="22" lean-forward="false" selection-start-line="40" selection-start-column="13" selection-end-line="40" selection-end-column="22" />
+            <state relative-caret-position="273">
+              <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
               <folding>
                 <element signature="e#0#57#0" expanded="true" />
               </folding>
@@ -38,37 +48,12 @@
       <file leaf-file-name="utils.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/utils/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4743">
-              <caret line="327" column="50" lean-forward="false" selection-start-line="327" selection-start-column="50" selection-end-line="327" selection-end-column="50" />
+            <state relative-caret-position="-107">
+              <caret line="5" column="9" lean-forward="true" selection-start-line="5" selection-start-column="9" selection-end-line="5" selection-end-column="9" />
               <folding>
-                <element signature="e#0#31#0" expanded="true" />
-                <element signature="e#2589#3611#0" expanded="false" />
-                <element signature="e#4631#4959#0" expanded="false" />
-                <element signature="e#5003#5165#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="sobel.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/utils/sobel.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1190">
-              <caret line="76" column="0" lean-forward="false" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
-              <folding>
-                <element signature="e#0#10#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="otsu.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/utils/otsu.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1853">
-              <caret line="113" column="4" lean-forward="false" selection-start-line="113" selection-start-column="4" selection-end-line="113" selection-end-column="32" />
-              <folding>
-                <element signature="e#0#10#0" expanded="true" />
+                <element signature="e#2588#3610#0" expanded="false" />
+                <element signature="e#4630#4958#0" expanded="false" />
+                <element signature="e#5002#5164#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -77,9 +62,11 @@
       <file leaf-file-name="canny.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/utils/canny.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="17">
-              <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="3" selection-end-column="10" />
-              <folding />
+            <state relative-caret-position="-963">
+              <caret line="6" column="23" lean-forward="true" selection-start-line="6" selection-start-column="23" selection-end-line="6" selection-end-column="23" />
+              <folding>
+                <element signature="e#0#29#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -87,8 +74,8 @@
       <file leaf-file-name="ransac.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/utils/ransac.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="19" column="29" lean-forward="false" selection-start-line="19" selection-start-column="29" selection-end-line="19" selection-end-column="29" />
+            <state relative-caret-position="544">
+              <caret line="32" column="0" lean-forward="false" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -96,11 +83,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="rectifyAffine.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="sobel.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/utils/sobel.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-355">
+              <caret line="2" column="24" lean-forward="false" selection-start-line="2" selection-start-column="24" selection-end-line="2" selection-end-column="24" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="rectifyAffine.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/rectifyAffine/rectifyAffine.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="169">
-              <caret line="125" column="32" lean-forward="false" selection-start-line="125" selection-start-column="20" selection-end-line="125" selection-end-column="32" />
+            <state relative-caret-position="907">
+              <caret line="126" column="6" lean-forward="false" selection-start-line="126" selection-start-column="6" selection-end-line="126" selection-end-column="6" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -127,9 +124,10 @@
       <find>coef</find>
       <find>suptitle</find>
       <find>get_point</find>
-      <find>create_image</find>
       <find>ransac</find>
+      <find>cdf</find>
       <find>get_xy</find>
+      <find>create_image</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -138,13 +136,13 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/utils/otsu.py" />
         <option value="$PROJECT_DIR$/src/utils/canny.py" />
-        <option value="$PROJECT_DIR$/src/rectifyAffine/rectifyAffine.py" />
-        <option value="$PROJECT_DIR$/src/utils/sobel.py" />
         <option value="$PROJECT_DIR$/src/utils/ransac.py" />
-        <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/src/utils/otsu.py" />
+        <option value="$PROJECT_DIR$/src/utils/sobel.py" />
         <option value="$PROJECT_DIR$/src/utils/utils.py" />
+        <option value="$PROJECT_DIR$/main.py" />
+        <option value="$PROJECT_DIR$/src/rectifyAffine/rectifyAffine.py" />
       </list>
     </option>
   </component>
@@ -154,9 +152,9 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="23" />
-    <option name="width" value="1440" />
+    <option name="width" value="1366" />
     <option name="height" value="804" />
   </component>
   <component name="ProjectView">
@@ -174,6 +172,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -190,14 +189,13 @@
               <item name="estudoOrientado_affineT" type="b2602c69:ProjectViewProjectNode" />
               <item name="estudoOrientado_affineT" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="utils" type="462c0819:PsiDirectoryNode" />
+              <item name="images" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
       <pane id="Scratches" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -264,7 +262,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="804" extended-state="0" />
+    <frame x="0" y="23" width="1440" height="804" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -272,8 +270,8 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32722145" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27080396" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32761088" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3526093" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27896994" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297568" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -337,10 +335,9 @@
         <state relative-caret-position="2057">
           <caret line="155" column="54" lean-forward="false" selection-start-line="155" selection-start-column="54" selection-end-line="155" selection-end-column="54" />
           <folding>
-            <element signature="e#0#31#0" expanded="true" />
-            <element signature="e#2589#3611#0" expanded="false" />
-            <element signature="e#4631#4959#0" expanded="false" />
-            <element signature="e#5003#5165#0" expanded="false" />
+            <element signature="e#2588#3610#0" expanded="false" />
+            <element signature="e#4630#4958#0" expanded="false" />
+            <element signature="e#5002#5164#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -349,7 +346,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1020">
           <caret line="61" column="53" lean-forward="false" selection-start-line="61" selection-start-column="53" selection-end-line="61" selection-end-column="53" />
-          <folding />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -387,7 +386,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="629">
           <caret line="38" column="17" lean-forward="false" selection-start-line="38" selection-start-column="17" selection-end-line="38" selection-end-column="17" />
-          <folding />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -416,10 +417,9 @@
         <state relative-caret-position="1904">
           <caret line="186" column="33" lean-forward="false" selection-start-line="186" selection-start-column="33" selection-end-line="186" selection-end-column="33" />
           <folding>
-            <element signature="e#0#31#0" expanded="true" />
-            <element signature="e#2589#3611#0" expanded="false" />
-            <element signature="e#4631#4959#0" expanded="false" />
-            <element signature="e#5003#5165#0" expanded="false" />
+            <element signature="e#2588#3610#0" expanded="false" />
+            <element signature="e#4630#4958#0" expanded="false" />
+            <element signature="e#5002#5164#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -438,7 +438,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="629">
           <caret line="38" column="17" lean-forward="false" selection-start-line="38" selection-start-column="17" selection-end-line="38" selection-end-column="17" />
-          <folding />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -467,10 +469,9 @@
         <state relative-caret-position="1904">
           <caret line="186" column="33" lean-forward="false" selection-start-line="186" selection-start-column="33" selection-end-line="186" selection-end-column="33" />
           <folding>
-            <element signature="e#0#31#0" expanded="true" />
-            <element signature="e#2589#3611#0" expanded="false" />
-            <element signature="e#4631#4959#0" expanded="false" />
-            <element signature="e#5003#5165#0" expanded="false" />
+            <element signature="e#2588#3610#0" expanded="false" />
+            <element signature="e#4630#4958#0" expanded="false" />
+            <element signature="e#5002#5164#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -490,10 +491,9 @@
         <state relative-caret-position="1564">
           <caret line="137" column="20" lean-forward="false" selection-start-line="137" selection-start-column="20" selection-end-line="137" selection-end-column="20" />
           <folding>
-            <element signature="e#0#31#0" expanded="true" />
-            <element signature="e#2589#3611#0" expanded="false" />
-            <element signature="e#4631#4959#0" expanded="false" />
-            <element signature="e#5003#5165#0" expanded="false" />
+            <element signature="e#2588#3610#0" expanded="false" />
+            <element signature="e#4630#4958#0" expanded="false" />
+            <element signature="e#5002#5164#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -523,10 +523,9 @@
         <state relative-caret-position="476">
           <caret line="28" column="8" lean-forward="false" selection-start-line="28" selection-start-column="8" selection-end-line="28" selection-end-column="29" />
           <folding>
-            <element signature="e#0#31#0" expanded="true" />
-            <element signature="e#2589#3611#0" expanded="false" />
-            <element signature="e#4631#4959#0" expanded="false" />
-            <element signature="e#5003#5165#0" expanded="false" />
+            <element signature="e#2588#3610#0" expanded="false" />
+            <element signature="e#4630#4958#0" expanded="false" />
+            <element signature="e#5002#5164#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -556,10 +555,9 @@
         <state relative-caret-position="476">
           <caret line="28" column="8" lean-forward="false" selection-start-line="28" selection-start-column="8" selection-end-line="28" selection-end-column="29" />
           <folding>
-            <element signature="e#0#31#0" expanded="true" />
-            <element signature="e#2589#3611#0" expanded="false" />
-            <element signature="e#4631#4959#0" expanded="false" />
-            <element signature="e#5003#5165#0" expanded="false" />
+            <element signature="e#2588#3610#0" expanded="false" />
+            <element signature="e#4630#4958#0" expanded="false" />
+            <element signature="e#5002#5164#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -589,10 +587,9 @@
         <state relative-caret-position="357">
           <caret line="28" column="8" lean-forward="false" selection-start-line="28" selection-start-column="8" selection-end-line="28" selection-end-column="29" />
           <folding>
-            <element signature="e#0#31#0" expanded="true" />
-            <element signature="e#2589#3611#0" expanded="false" />
-            <element signature="e#4631#4959#0" expanded="false" />
-            <element signature="e#5003#5165#0" expanded="false" />
+            <element signature="e#2588#3610#0" expanded="false" />
+            <element signature="e#4630#4958#0" expanded="false" />
+            <element signature="e#5002#5164#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -632,10 +629,9 @@
         <state relative-caret-position="2652">
           <caret line="190" column="28" lean-forward="true" selection-start-line="190" selection-start-column="18" selection-end-line="190" selection-end-column="28" />
           <folding>
-            <element signature="e#0#31#0" expanded="true" />
-            <element signature="e#2589#3611#0" expanded="false" />
-            <element signature="e#4631#4959#0" expanded="false" />
-            <element signature="e#5003#5165#0" expanded="false" />
+            <element signature="e#2588#3610#0" expanded="false" />
+            <element signature="e#4630#4958#0" expanded="false" />
+            <element signature="e#5002#5164#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -665,10 +661,9 @@
         <state relative-caret-position="2873">
           <caret line="203" column="0" lean-forward="false" selection-start-line="203" selection-start-column="0" selection-end-line="203" selection-end-column="0" />
           <folding>
-            <element signature="e#0#31#0" expanded="true" />
-            <element signature="e#2589#3611#0" expanded="false" />
-            <element signature="e#4631#4959#0" expanded="false" />
-            <element signature="e#5003#5165#0" expanded="false" />
+            <element signature="e#2588#3610#0" expanded="false" />
+            <element signature="e#4630#4958#0" expanded="false" />
+            <element signature="e#5002#5164#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -688,10 +683,9 @@
         <state relative-caret-position="748">
           <caret line="51" column="32" lean-forward="false" selection-start-line="51" selection-start-column="32" selection-end-line="51" selection-end-column="32" />
           <folding>
-            <element signature="e#0#31#0" expanded="true" />
-            <element signature="e#2589#3611#0" expanded="false" />
-            <element signature="e#4631#4959#0" expanded="false" />
-            <element signature="e#5003#5165#0" expanded="false" />
+            <element signature="e#2588#3610#0" expanded="false" />
+            <element signature="e#4630#4958#0" expanded="false" />
+            <element signature="e#5002#5164#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -721,10 +715,9 @@
         <state relative-caret-position="1394">
           <caret line="116" column="14" lean-forward="false" selection-start-line="116" selection-start-column="14" selection-end-line="116" selection-end-column="14" />
           <folding>
-            <element signature="e#0#31#0" expanded="true" />
-            <element signature="e#2589#3611#0" expanded="false" />
-            <element signature="e#4631#4959#0" expanded="false" />
-            <element signature="e#5003#5165#0" expanded="false" />
+            <element signature="e#2588#3610#0" expanded="false" />
+            <element signature="e#4630#4958#0" expanded="false" />
+            <element signature="e#5002#5164#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -754,10 +747,9 @@
         <state relative-caret-position="578">
           <caret line="37" column="25" lean-forward="true" selection-start-line="37" selection-start-column="25" selection-end-line="37" selection-end-column="25" />
           <folding>
-            <element signature="e#0#31#0" expanded="true" />
-            <element signature="e#2589#3611#0" expanded="false" />
-            <element signature="e#4631#4959#0" expanded="false" />
-            <element signature="e#5003#5165#0" expanded="false" />
+            <element signature="e#2588#3610#0" expanded="false" />
+            <element signature="e#4630#4958#0" expanded="false" />
+            <element signature="e#5002#5164#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -772,73 +764,72 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/utils/canny.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="0" lean-forward="false" selection-start-line="1" selection-start-column="0" selection-end-line="3" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/utils/otsu.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1853">
-          <caret line="113" column="4" lean-forward="false" selection-start-line="113" selection-start-column="4" selection-end-line="113" selection-end-column="32" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/utils/ransac.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="19" column="29" lean-forward="false" selection-start-line="19" selection-start-column="29" selection-end-line="19" selection-end-column="29" />
+        <state relative-caret-position="544">
+          <caret line="32" column="0" lean-forward="false" selection-start-line="32" selection-start-column="0" selection-end-line="32" selection-end-column="0" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/utils/sobel.py">
+    <entry file="file://$PROJECT_DIR$/src/utils/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1190">
-          <caret line="76" column="0" lean-forward="false" selection-start-line="76" selection-start-column="0" selection-end-line="76" selection-end-column="0" />
+        <state relative-caret-position="-107">
+          <caret line="5" column="9" lean-forward="true" selection-start-line="5" selection-start-column="9" selection-end-line="5" selection-end-column="9" />
           <folding>
-            <element signature="e#0#10#0" expanded="true" />
+            <element signature="e#2588#3610#0" expanded="false" />
+            <element signature="e#4630#4958#0" expanded="false" />
+            <element signature="e#5002#5164#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/utils/utils.py">
+    <entry file="file://$PROJECT_DIR$/src/utils/sobel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4743">
-          <caret line="327" column="50" lean-forward="false" selection-start-line="327" selection-start-column="50" selection-end-line="327" selection-end-column="50" />
+        <state relative-caret-position="-355">
+          <caret line="2" column="24" lean-forward="false" selection-start-line="2" selection-start-column="24" selection-end-line="2" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="273">
+          <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#57#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/otsu.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1699">
+          <caret line="3" column="18" lean-forward="false" selection-start-line="3" selection-start-column="18" selection-end-line="3" selection-end-column="18" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
-            <element signature="e#2589#3611#0" expanded="false" />
-            <element signature="e#4631#4959#0" expanded="false" />
-            <element signature="e#5003#5165#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils/canny.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-963">
+          <caret line="6" column="23" lean-forward="true" selection-start-line="6" selection-start-column="23" selection-end-line="6" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/rectifyAffine/rectifyAffine.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="169">
-          <caret line="125" column="32" lean-forward="false" selection-start-line="125" selection-start-column="20" selection-end-line="125" selection-end-column="32" />
+        <state relative-caret-position="907">
+          <caret line="126" column="6" lean-forward="false" selection-start-line="126" selection-start-column="6" selection-end-line="126" selection-end-column="6" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="565">
-          <caret line="40" column="22" lean-forward="false" selection-start-line="40" selection-start-column="13" selection-end-line="40" selection-end-column="22" />
-          <folding>
-            <element signature="e#0#57#0" expanded="true" />
           </folding>
         </state>
       </provider>
