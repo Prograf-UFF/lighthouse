@@ -257,8 +257,8 @@ def get_vanishLine_manual(img, show_samples=False, show_ransac=False):
 def get_vanishLine_automatic(img, image_base_path="src/images/base/", img_vline="img_to_get_vLine.jpg"):
     img_canny = cv2.imread(image_base_path + img_vline, 0)
     # puntos sacados manualmente
-    p1, p2 = [271, 507, 1], [682, 558, 1]
-    p3, p4 = [858, 495, 1], [1015, 549, 1]
+    p1, p2 = [271*4, 507*4, 1], [682*4, 558*4, 1]
+    p3, p4 = [858*4, 495*4, 1], [1015*4, 549*4, 1]
     samples_x = []
     samples_y = []
     add_samples(p1, p2, samples_x, samples_y, img_canny)
