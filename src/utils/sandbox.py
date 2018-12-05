@@ -1,13 +1,14 @@
 # Este script foi criado para fazer a retificação de uma região retangular
 # sobre o plano d'água. Ele deverá ser excluído após seu conteúdo ser mesclado
 # com o projeto principal, possivelmente com o módulo src.utils.utils.
-
+import sys
+sys.path.append('/usr/local/lib/python3.6/site-packages')
 import cv2, exifread, numpy as np, matplotlib.pyplot as plt
 from typing import List, Tuple
 from matplotlib.lines import Line2D
 from matplotlib.path import Path
 from matplotlib.patches import Polygon
-from src.utils.utils import getPlotBoundsLine, get_vanishLine_automatic
+from src.utils.utils import distance_euclidean, get_vanishLine_automatic
 
 
 GROUND_HEIGHT = 750  # From sea level, in centimeters (source: Google Maps).
@@ -22,6 +23,9 @@ CMOS_SKEW = 0.0  # This is the expected value.
 ROI_SIZE = (9000, 9000)  # The size of the ROI, in centimeters.
 PIXEL_SIZE = (10, 10)  # The size of pixels in the warped image, in centimeters.
 
+CV2_WINDOW_RESIZE_WIDTH = 1200  # resize image to show on screen with openCV
+CV2_WINDOW_RESIZE_HEIGHT = 800  # resize image to show on screen with openCV
+
 
 def get_roi_lower_left_corner(im: np.ndarray) -> np.ndarray:
     """Return the location of the lower-left corner of the ROI in image coordinates.
@@ -35,7 +39,8 @@ def get_roi_lower_left_corner(im: np.ndarray) -> np.ndarray:
         if event == cv2.EVENT_LBUTTONDOWN:
             coords = np.asarray((x, y))
 
-    cv2.namedWindow('roi-lower-left-corner')
+    cv2.namedWindow('roi-lower-left-corner', cv2.WINDOW_NORMAL)
+    cv2.resizeWindow('roi-lower-left-corner', CV2_WINDOW_RESIZE_WIDTH, CV2_WINDOW_RESIZE_HEIGHT)
     cv2.setMouseCallback('roi-lower-left-corner', mouse_down_callback)
     while coords is None:
         cv2.imshow('roi-lower-left-corner', im)
@@ -99,7 +104,7 @@ def compute_roi(im: np.ndarray, h: float, f: float, s: float, m: Tuple[float, fl
     :return: (roi, q_, l_) includes the warpped ROI image, the coordinates of the ROI in the input image, and the coefficients of the vanishing line in the input image, respectively.
     """
     c = np.asarray((0, 0, h))  # The location of the center of the camera in world coordinates system.
-    l_ = get_vanishLine_automatic(im)  # The coefficients of the vanishing line.
+    l_ = get_vanishLine_automatic()  # The coefficients of the vanishing line.
     q0_ = get_roi_lower_left_corner(im)  # The location of the lower-left corner of the ROI in image coordinates.
 
     # Compute the projection matrix P.
@@ -112,18 +117,22 @@ def compute_roi(im: np.ndarray, h: float, f: float, s: float, m: Tuple[float, fl
     # Compute the location of the reference point of the ROI in world coordinates (it is given by the intersecion between the ray r0 and the mean water plane).
     d0 = np.linalg.inv(M).dot((q0_[0] + 0.5, q0_[1] + 0.5, 1))  # The direction of the ray to the reference point in world coordinates.
     q0 = (-c[2] / d0[2]) * d0 + c  # The location of the reference point of the ROI in world coordinates.
-
+    print(d0, q0)
     # Compute the location of the four corners of the ROI in world coordinates.
     q = [q0, q0 + np.asarray((ROI_SIZE[0], 0, 0)), q0 + np.asarray((ROI_SIZE[0], ROI_SIZE[1], 0)), q0 + np.asarray((0, ROI_SIZE[1], 0))]
 
     # Compute the location of the four corners of the ROI in image coordinates.
     q_ = [P.dot((x, y, z, 1)) for x, y, z in q]
     q_ = np.float32([np.asarray((x_ / w_, y_ / w_)) for x_, y_, w_ in q_])
-
-    w_ = np.float32([(0, 0), (ROI_SIZE[0] // PIXEL_SIZE[0], 0), (ROI_SIZE[0] // PIXEL_SIZE[0], ROI_SIZE[1] // PIXEL_SIZE[1]), (0, ROI_SIZE[1] // PIXEL_SIZE[1])])
+    print(q, q_)
+    new_h = distance_euclidean(q_[0], q_[1])
+    new_w = distance_euclidean(q_[0], q_[3])
+    # w_ = np.float32([(0, 0), (ROI_SIZE[0] // PIXEL_SIZE[0], 0), (ROI_SIZE[0] // PIXEL_SIZE[0], ROI_SIZE[1] // PIXEL_SIZE[1]), (0, ROI_SIZE[1] // PIXEL_SIZE[1])])
+    w_ = np.float32([(0, 0), (new_h, 0), (new_h, new_w), (0, new_w)])
 
     M = cv2.getPerspectiveTransform(q_, w_)
-    roi = cv2.warpPerspective(im, M, (ROI_SIZE[0] // PIXEL_SIZE[0], ROI_SIZE[1] // PIXEL_SIZE[1]), flags=cv2.INTER_LANCZOS4)
+    # roi = cv2.warpPerspective(im, M, (ROI_SIZE[0] // PIXEL_SIZE[0], ROI_SIZE[1] // PIXEL_SIZE[1]), flags=cv2.INTER_LANCZOS4)
+    roi = cv2.warpPerspective(im, M, (new_h, new_w), flags=cv2.INTER_LANCZOS4)
 
     return roi, q_, l_
 
@@ -140,7 +149,7 @@ def read_exif_tags(path_name: str) -> dict:
 def main():
     # Set some constant values.
     image_path = 'src/images/'
-    image_filename = 'exemplo6.jpg'
+    image_filename = 'exemplo1.jpg'
 
     # Get intrinsic parameters of the camera from the input image file.
     tags = read_exif_tags(image_path + image_filename)
@@ -172,9 +181,10 @@ def main():
     y = -(l_[0] * x + l_[2]) / l_[1]
     ax1.add_line(Line2D(x, y, color='r'))
 
+    roi = cv2.flip(roi, 0)  # horizontal flip image
     ax2.imshow(roi[..., ::-1])
     ax2.set(title='ROI')
-
+    plt.imsave("src/images/img_save/test.jpg", roi[..., ::-1])
     plt.show(block=True)
 
 
