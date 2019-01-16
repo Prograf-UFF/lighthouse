@@ -11,10 +11,14 @@ from src.utils.ransac import *
 from src.utils.otsu import *
 from src.utils.canny import *
 import copy
-sys.path.append('/usr/local/lib/python3.6/site-packages')
+#sys.path.append('/usr/local/lib/python3.6/site-packages')
 import cv2
 from typing import List, Tuple
 
+
+# Window's size of the wave in cv2.imshow
+WAVE_WINDOW_SIZE_WIDTH = 900
+WAVE_WINDOW_SIZE_HEIGHT = 470
 
 IMG_TO_GET_VLINE = 'src/images/base/img_to_get_vLine.jpg'
 P1_XYW, P2_XYW = [271*4, 507*4, 1], [682*4, 558*4, 1]   # points taken manually
@@ -48,6 +52,19 @@ def my_print(headers: List[str], matrix: np.ndarray, title: str="") -> None:
     print("********************  " + title + "  *********************")
     print(table.draw())
 
+def show_image(image: np.ndarray, title: str='title image', resize_w: int=1200, resize_h: int=800) -> None:
+    """ Show image in OpenCV
+    :param image: the input image
+    :param title: image's title
+    :param resize_w: window width
+    :param resize_h: window height
+    :return: None, only show image
+    """
+    cv2.namedWindow(title, cv2.WINDOW_NORMAL)
+    cv2.resizeWindow(title, resize_w, resize_h)
+    cv2.imshow(title, image)
+    cv2.waitKey(0)
+    cv2.destroyWindow(title)
 
 def show_image_properties(img: np.ndarray) -> None:
     """ show image properties.

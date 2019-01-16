@@ -3,7 +3,8 @@ import numpy as np
 from scipy import signal
 import matplotlib.pyplot as plt
 from operator import itemgetter
-sys.path.append('/usr/local/lib/python3.6/site-packages')
+from ..utils.utils import show_image
+#sys.path.append('/usr/local/lib/python3.6/site-packages')
 import cv2
 import copy
 
@@ -41,15 +42,14 @@ def sobel_filter(image: np.ndarray, k_size: int=3, show_: bool=True) -> np.ndarr
     g = np.sqrt(gx * gx + gy * gy)  # magnitude
     g *= 255.0 / np.max(g)  # normalize (Q&D)
     if show_:
-        print(g.shape)
-        plt.imshow(g, cmap='gray')
-        plt.show()
+        show_image(g, "sobel filter", 900, 470)
     return g
 
 
-def sort_g(g: np.ndarray) -> np.ndarray:
+def sort_g(g: np.ndarray, orden: bool=False) -> np.ndarray:
     """we order the values of the gradient ascending without losing the location they represent in the image
     :param g: image's edges, represented as gradient values
+    :param orden: if is true is sorted DESCEND
     :return: [[(g_x, g_y), (x, y)]] , value of the gradient and the position it represents
      in the input image sorted according to the value of the gradient ascending
     """
@@ -58,7 +58,7 @@ def sort_g(g: np.ndarray) -> np.ndarray:
         for y in range(0, g.shape[0]):
             get_tuplas.append((g[y, x], [x, y]))
 
-    get_tuplas.sort(key=itemgetter(0))
+    get_tuplas.sort(key=itemgetter(0), reverse=orden)
     return get_tuplas
 
 
@@ -114,10 +114,6 @@ def filtrar_g(g: np.ndarray, val_limiar: int, show_: bool=True) -> np.ndarray:
             if g[y, x]>=val_limiar:
                 copy_g[y, x]= 255
     if show_:
-        plt.figure(1)
-        plt.imshow(copy_g, cmap='gray')
-        plt.figure(2)
-        plt.imshow(g, cmap='gray')
-        plt.show()
+        show_image(copy_g, "higher values", 900, 470)
     return copy_g
 

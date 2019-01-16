@@ -2,7 +2,7 @@
 # sobre o plano d'água. Ele deverá ser excluído após seu conteúdo ser mesclado
 # com o projeto principal, possivelmente com o módulo src.utils.utils.
 import sys
-sys.path.append('/usr/local/lib/python3.6/site-packages')
+# sys.path.append('/usr/local/lib/python3.6/site-packages')
 import cv2, exifread, numpy as np, matplotlib.pyplot as plt
 from typing import List, Tuple
 from matplotlib.lines import Line2D
@@ -20,7 +20,7 @@ CMOS_SENSOR_WIDTH = 23.5 / 10  # In centimeters (source: Nikon D3300 manual).
 CMOS_SENSOR_HEIGHT = 15.6 / 10  # In centimeters (source: Nikon D3300 manual).
 CMOS_SKEW = 0.0  # This is the expected value.
 
-ROI_SIZE = (9000, 9000)  # The size of the ROI, in centimeters.
+ROI_SIZE = (9000 + 400, 9000 + 9000)  # The size of the ROI, in centimeters.
 PIXEL_SIZE = (10, 10)  # The size of pixels in the warped image, in centimeters.
 
 CV2_WINDOW_RESIZE_WIDTH = 1200  # resize image to show on screen with openCV
@@ -127,12 +127,14 @@ def compute_roi(im: np.ndarray, h: float, f: float, s: float, m: Tuple[float, fl
     print(q, q_)
     new_h = distance_euclidean(q_[0], q_[1])
     new_w = distance_euclidean(q_[0], q_[3])
-    # w_ = np.float32([(0, 0), (ROI_SIZE[0] // PIXEL_SIZE[0], 0), (ROI_SIZE[0] // PIXEL_SIZE[0], ROI_SIZE[1] // PIXEL_SIZE[1]), (0, ROI_SIZE[1] // PIXEL_SIZE[1])])
-    w_ = np.float32([(0, 0), (new_h, 0), (new_h, new_w), (0, new_w)])
+    w_ = np.float32([(0, 0), (ROI_SIZE[1] // PIXEL_SIZE[0], 0), (ROI_SIZE[1] // PIXEL_SIZE[0], ROI_SIZE[0] // PIXEL_SIZE[1]), (0, ROI_SIZE[0] // PIXEL_SIZE[1])])
+    #w_ = np.float32([(0, 0), (int(new_h // PIXEL_SIZE[0]), 0), (int(new_h // PIXEL_SIZE[0]), int(new_w // PIXEL_SIZE[1])), (0, int(new_w // PIXEL_SIZE[1]))])
+    #w_ = np.float32([(0, 0), (new_h, 0), (new_h, new_w), (0, new_w)])
 
     M = cv2.getPerspectiveTransform(q_, w_)
-    # roi = cv2.warpPerspective(im, M, (ROI_SIZE[0] // PIXEL_SIZE[0], ROI_SIZE[1] // PIXEL_SIZE[1]), flags=cv2.INTER_LANCZOS4)
-    roi = cv2.warpPerspective(im, M, (new_h, new_w), flags=cv2.INTER_LANCZOS4)
+    roi = cv2.warpPerspective(im, M, (ROI_SIZE[1] // PIXEL_SIZE[0], ROI_SIZE[0] // PIXEL_SIZE[1]), flags=cv2.INTER_LANCZOS4)
+    #roi = cv2.warpPerspective(im, M, (int(new_h // PIXEL_SIZE[0]), int(new_w // PIXEL_SIZE[1])), flags=cv2.INTER_LANCZOS4)
+    #roi = cv2.warpPerspective(im, M, (new_h, new_w), flags=cv2.INTER_LANCZOS4)
 
     return roi, q_, l_
 
@@ -148,11 +150,12 @@ def read_exif_tags(path_name: str) -> dict:
 
 def main():
     # Set some constant values.
-    image_path = 'src/images/'
-    image_filename = 'exemplo1.jpg'
+    image_path = 'src/images/image_test/'
+    image_filename = 'DSC_000000920'
 
     # Get intrinsic parameters of the camera from the input image file.
-    tags = read_exif_tags(image_path + image_filename)
+    tags = read_exif_tags(image_path + image_filename + '.jpg')
+
     focal_length = exif_ratio_to_float(tags['EXIF FocalLength'].values[0])  # In millimeters.
     image_width = tags['EXIF ExifImageWidth'].values[0]  # In pixels.
     image_height = tags['EXIF ExifImageLength'].values[0]  # In pixels.
@@ -163,15 +166,15 @@ def main():
     o = (image_width / 2, image_height / 2)  # (o_u, o_v) is the location of the center of the image, in pixels.
 
     # Load input image.
-    im = cv2.imread(image_path + image_filename)  # The input image.
+    im = cv2.imread(image_path + image_filename + '.jpg')  # The input image.
 
     # Compute the image of the ROI.
     roi, q_, l_ = compute_roi(im, CAMERA_HEIGHT, f, s, m, o)
 
     # Show results.
     fig = plt.figure()
-    ax1 = fig.add_subplot(1, 2, 1)
-    ax2 = fig.add_subplot(1, 2, 2)
+    ax1 = fig.add_subplot(1, 1, 1)
+    # ax2 = fig.add_subplot(1, 2, 2)
 
     ax1.imshow(im[..., ::-1])
     ax1.set(title='Input')
@@ -180,12 +183,14 @@ def main():
     x = np.array(ax1.get_xlim())
     y = -(l_[0] * x + l_[2]) / l_[1]
     ax1.add_line(Line2D(x, y, color='r'))
+    plt.axis('off')
+    plt.savefig(image_path + image_filename + "_show_roi.jpg", bbox_inches='tight')
 
     roi = cv2.flip(roi, 0)  # horizontal flip image
-    ax2.imshow(roi[..., ::-1])
-    ax2.set(title='ROI')
-    plt.imsave("src/images/img_save/test.jpg", roi[..., ::-1])
-    plt.show(block=True)
+    # ax2.imshow(roi[..., ::-1])
+    # ax2.set(title='ROI')
+    plt.imsave(image_path + image_filename + "_crop.jpg", roi[..., ::-1])
+    # plt.show(block=True)
 
 
 if __name__ == '__main__':
