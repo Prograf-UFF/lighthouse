@@ -8,7 +8,7 @@ from ..utils.sobel import sobel_filter, sort_g, cdf, get_xy, filtrar_g
 from ..utils.wavelength import get_wave_edge, smooth_wave, find_max_locals, get_wavelength, get_estimated_speed, ms_to_nudo, binarized_dilate_image
 from matplotlib.lines import Line2D
 from matplotlib.patches import Polygon
-from ..utils.sandbox import read_exif_tags, exif_ratio_to_float, CAMERA_HEIGHT, CMOS_SKEW, CMOS_SENSOR_WIDTH, CMOS_SENSOR_HEIGHT, compute_roi
+from ..utils.sandbox import read_exif_tags, exif_ratio_to_float, CAMERA_HEIGHT, CMOS_SKEW, CMOS_SENSOR_WIDTH, CMOS_SENSOR_HEIGHT, compute_roi, compute_roi_v2
 import cv2, exifread, copy, random
 
 
@@ -16,9 +16,9 @@ class RectifyAffine:
     # ---------- Settings ---------
     nLinePairs = 2  # Select this may pairs of perpendicular lines
 
-    def __init__(self, path, image):
+    def __init__(self, path, image_name):
         self.path = path
-        self.image = image
+        self.image_name = image_name
         self.my_image = []
 
     def image_rectification(self, show_: bool=False) -> np.ndarray:
@@ -27,7 +27,7 @@ class RectifyAffine:
         :return: image, a part of the rectified image
         """
         # Get intrinsic parameters of the camera from the input image file.
-        tags = read_exif_tags(self.path + self.image + '.jpg')
+        tags = read_exif_tags(self.path + self.image_name + '.jpg')
         focal_length = exif_ratio_to_float(tags['EXIF FocalLength'].values[0])  # In millimeters.
         image_width = tags['EXIF ExifImageWidth'].values[0]  # In pixels.
         image_height = tags['EXIF ExifImageLength'].values[0]  # In pixels.
@@ -40,11 +40,13 @@ class RectifyAffine:
         o = (image_width / 2, image_height / 2)  # (o_u, o_v) is the location of the center of the image, in pixels.
 
         # Load input image.
-        im = cv2.imread(self.path + self.image + '_edge.png')  # The input image.
+        im = cv2.imread(self.path + self.image_name + '_edge.png')  # The input image.
         # Image 'png' with BGRA color, and we need only BGR
         im = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
 
         # Compute the image of the ROI.
+        _ = compute_roi_v2(im, CAMERA_HEIGHT, f, s, m, o)
+        return []
         roi, q_, l_ = compute_roi(im, CAMERA_HEIGHT, f, s, m, o)
         roi = cv2.flip(roi, 0)  # horizontal flip image
         if show_:

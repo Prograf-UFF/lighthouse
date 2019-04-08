@@ -9,7 +9,8 @@ from matplotlib.lines import Line2D
 from matplotlib.path import Path
 from matplotlib.patches import Polygon
 from src.utils.utils import distance_euclidean, get_vanishLine_automatic
-
+from ..utils.utils import *
+from ..utils.wavelength import binarized_dilate_image
 
 GROUND_HEIGHT = 750  # From sea level, in centimeters (source: Google Maps).
 FIFTH_FLOOR_HEIGHT = 375 * 4  # From ground, in centimeters (source: building plan).
@@ -117,14 +118,14 @@ def compute_roi(im: np.ndarray, h: float, f: float, s: float, m: Tuple[float, fl
     # Compute the location of the reference point of the ROI in world coordinates (it is given by the intersecion between the ray r0 and the mean water plane).
     d0 = np.linalg.inv(M).dot((q0_[0] + 0.5, q0_[1] + 0.5, 1))  # The direction of the ray to the reference point in world coordinates.
     q0 = (-c[2] / d0[2]) * d0 + c  # The location of the reference point of the ROI in world coordinates.
-    print(d0, q0)
+    print("Print d0 y q0:", d0, q0)
     # Compute the location of the four corners of the ROI in world coordinates.
     q = [q0, q0 + np.asarray((ROI_SIZE[0], 0, 0)), q0 + np.asarray((ROI_SIZE[0], ROI_SIZE[1], 0)), q0 + np.asarray((0, ROI_SIZE[1], 0))]
 
     # Compute the location of the four corners of the ROI in image coordinates.
     q_ = [P.dot((x, y, z, 1)) for x, y, z in q]
     q_ = np.float32([np.asarray((x_ / w_, y_ / w_)) for x_, y_, w_ in q_])
-    print(q, q_)
+    print("Print q y q_:", q, q_)
     new_h = distance_euclidean(q_[0], q_[1])
     new_w = distance_euclidean(q_[0], q_[3])
     w_ = np.float32([(0, 0), (ROI_SIZE[1] // PIXEL_SIZE[0], 0), (ROI_SIZE[1] // PIXEL_SIZE[0], ROI_SIZE[0] // PIXEL_SIZE[1]), (0, ROI_SIZE[0] // PIXEL_SIZE[1])])
@@ -138,6 +139,84 @@ def compute_roi(im: np.ndarray, h: float, f: float, s: float, m: Tuple[float, fl
 
     return roi, q_, l_
 
+
+def find_skeleton3(img):
+    skeleton = np.zeros(img.shape,np.uint8)
+    eroded = np.zeros(img.shape,np.uint8)
+    temp = np.zeros(img.shape,np.uint8)
+
+    _,thresh = cv2.threshold(img,127,255,0)
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_CROSS,(3,3))
+
+    iters = 0
+    while(True):
+        cv2.erode(thresh, kernel, eroded)
+        cv2.dilate(eroded, kernel, temp)
+        cv2.subtract(thresh, temp, temp)
+        cv2.bitwise_or(skeleton, temp, skeleton)
+        thresh, eroded = eroded, thresh # Swap instead of copy
+
+        iters += 1
+        if cv2.countNonZero(thresh) == 0:
+            return (skeleton,iters)
+
+def compute_roi_v2(im: np.ndarray, h: float, f: float, s: float, m: Tuple[float, float], o: Tuple[float, float]) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Return the Region of Interest (ROI) after warping.
+    :param im: the input image.
+    :param h: the camera height from the mean water surface plane, in centimeters.
+    :param f: the focal length, in centimeters.
+    :param s: the skew of the pixel grid.
+    :param m: (m_x, m_y) are the ratios between the sensor and the image measurements (width and height, in centimetes for the sensor and in pixels for the image).
+    :param o: (o_u, o_v) is the location of the center of the image, in pixels.
+    :return: (roi, q_, l_) includes the warpped ROI image, the coordinates of the ROI in the input image, and the coefficients of the vanishing line in the input image, respectively.
+    """
+    c = np.asarray((0, 0, h))  # The location of the center of the camera in world coordinates system.
+    l_ = get_vanishLine_automatic()  # The coefficients of the vanishing line.
+    q0_ = get_roi_lower_left_corner(im)  # The location of the lower-left corner of the ROI in image coordinates.
+
+    # Compute the projection matrix P.
+    K = make_intrinsic_matrix(f, s, m, o)
+    R = make_rotation_matrix(K, l_)
+    M = K.dot(R)
+    T = make_translation_matrix(c)
+    P = M.dot(T)  # The 3x4 projection matrix P maps points in 3D world coordinates to points in 2D image coordinates.
+
+    # Compute the location of the reference point of the ROI in world coordinates (it is given by the intersecion between the ray r0 and the mean water plane).
+    d0 = np.linalg.inv(M).dot((q0_[0] + 0.5, q0_[1] + 0.5, 1))  # The direction of the ray to the reference point in world coordinates.
+    q0 = (-c[2] / d0[2]) * d0 + c  # The location of the reference point of the ROI in world coordinates.
+
+    # Compute the location of the four corners of the ROI in world coordinates.
+    q = [q0, q0 + np.asarray((ROI_SIZE[0], 0, 0)), q0 + np.asarray((ROI_SIZE[0], ROI_SIZE[1], 0)), q0 + np.asarray((0, ROI_SIZE[1], 0))]
+
+    # Compute the location of the four corners of the ROI in image coordinates.
+    q_ = [P.dot((x, y, z, 1)) for x, y, z in q]
+    q_ = np.float32([np.asarray((x_ / w_, y_ / w_)) for x_, y_, w_ in q_])
+
+    q_w = int(distance_euclidean(q_[0], q_[1]))
+    q_h = int(distance_euclidean(q_[0], q_[3]))
+    y0 = int(q_[3][1])
+    x0 = int(q_[0][0])
+
+    # draw points
+    draw_points = False
+    if draw_points:
+        cv2.circle(im, (q_[0][0], q_[0][1]), 23, (0, 0, 255), -1)       # red
+        cv2.circle(im, (q_[1][0], q_[1][1]), 23, (0, 255, 0), -1)       # Green
+        cv2.circle(im, (q_[2][0], q_[2][1]), 23, (255, 0, 0), -1)      # Blue
+        cv2.circle(im, (q_[3][0], q_[3][1]), 23, (0, 255, 255), -1)     # Yellow
+        #cv2.circle(im, (x0, y0), 23, (255, 0, 255), -1)     # Purpura
+
+    crop_img = im[y0:y0 + q_h, x0:x0 + q_w]
+    crop_img = binarized_dilate_image(crop_img, show_=False, bin_cv2=True)
+    skeleton, iters = find_skeleton3(crop_img)
+    print("Iters skeleton: ", iters)
+
+    #show_image(im, "ROI-X", CV2_WINDOW_RESIZE_WIDTH, CV2_WINDOW_RESIZE_HEIGHT)
+    show_image(crop_img, "ROI-X", q_w, q_h)
+    show_image(skeleton, "ROI-skeleton", q_w, q_h)
+
+    return []
 
 def read_exif_tags(path_name: str) -> dict:
     """Return the Exif metadata from the given TIFF or JPEG filename.

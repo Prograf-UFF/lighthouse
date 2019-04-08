@@ -52,6 +52,7 @@ def my_print(headers: List[str], matrix: np.ndarray, title: str="") -> None:
     print("********************  " + title + "  *********************")
     print(table.draw())
 
+
 def show_image(image: np.ndarray, title: str='title image', resize_w: int=1200, resize_h: int=800) -> None:
     """ Show image in OpenCV
     :param image: the input image
@@ -65,6 +66,7 @@ def show_image(image: np.ndarray, title: str='title image', resize_w: int=1200, 
     cv2.imshow(title, image)
     cv2.waitKey(0)
     cv2.destroyWindow(title)
+
 
 def show_image_properties(img: np.ndarray) -> None:
     """ show image properties.

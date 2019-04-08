@@ -26,8 +26,8 @@ def binarized_dilate_image(image: np.ndarray, show_: bool=False, bin_cv2: bool=T
 
     image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     if bin_cv2:
-        # ret, th1 = cv2.threshold(image_gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-        _, image_bin = cv2.threshold(image_gray, 70, 255, cv2.THRESH_BINARY)
+        _, image_bin = cv2.threshold(image_gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+        #_, image_bin = cv2.threshold(image_gray, 70, 255, cv2.THRESH_BINARY)
     else:
         g = image_gray
         sort_g_tupla = sort_g(g, orden=True)
@@ -38,8 +38,8 @@ def binarized_dilate_image(image: np.ndarray, show_: bool=False, bin_cv2: bool=T
         print("random #:", rd)
 
         image_bin = filtrar_g(g, g[xy[1], xy[0]], False)
-    kernel = np.ones((15, 15), np.uint8)
-    image_dilate = cv2.dilate(image_bin, kernel, iterations=1)
+    kernel = np.ones((3, 3), np.uint8)
+    image_dilate = cv2.dilate(image_bin, kernel, iterations=2)
     if show_:
         show_image(image_dilate, "binarization", WAVE_WINDOW_SIZE_WIDTH, WAVE_WINDOW_SIZE_HEIGHT)
     return image_dilate
