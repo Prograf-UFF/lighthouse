@@ -172,12 +172,13 @@ def compute_roi_v2(im: np.ndarray, h: float, f: float, s: float, m: Tuple[float,
     q_ = [P.dot((x, y, z, 1)) for x, y, z in q]
     q_ = np.float32([np.asarray((x_ / w_, y_ / w_)) for x_, y_, w_ in q_])
 
+    # ----------------------------------------------------------
     q_w = int(distance_euclidean(q_[0], q_[1]))
     q_h = int(distance_euclidean(q_[0], q_[3]))
     y0 = int(q_[3][1])
     x0 = int(q_[0][0])
 
-    # draw points
+    # draw calculate points
     draw_points = False
     if draw_points:
         cv2.circle(im, (q_[0][0], q_[0][1]), 23, (0, 0, 255), -1)       # red
@@ -189,10 +190,23 @@ def compute_roi_v2(im: np.ndarray, h: float, f: float, s: float, m: Tuple[float,
     crop_img = im[y0:y0 + q_h, x0:x0 + q_w]
     crop_img = binarized_dilate_image(crop_img, show_=False, bin_cv2=True)
 
-    #show_image(im, "ROI-X", CV2_WINDOW_RESIZE_WIDTH, CV2_WINDOW_RESIZE_HEIGHT)
-    show_image(crop_img, "ROI-X", q_w, q_h)
+    # binary image put into gray-scale image
+    a = np.zeros((q_h, q_w, 3), dtype=im.dtype)
+    a[:, :, 0] = crop_img
+    a[:, :, 1] = crop_img
+    a[:, :, 2] = crop_img
+    im[y0:y0 + q_h, x0:x0 + q_w] = a
+    # ----------------------------------------------------------
+    w_ = np.float32(
+        [(0, 0), (ROI_SIZE[1] // PIXEL_SIZE[0], 0), (ROI_SIZE[1] // PIXEL_SIZE[0], ROI_SIZE[0] // PIXEL_SIZE[1]),
+         (0, ROI_SIZE[0] // PIXEL_SIZE[1])])
 
-    return []
+    M = cv2.getPerspectiveTransform(q_, w_)
+    roi = cv2.warpPerspective(im, M, (ROI_SIZE[1] // PIXEL_SIZE[0], ROI_SIZE[0] // PIXEL_SIZE[1]),
+                              flags=cv2.INTER_LANCZOS4)
+
+    #show_image(im, "ROI-Y")
+    return roi, q_, l_
 
 
 def read_exif_tags(path_name: str) -> dict:

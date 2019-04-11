@@ -68,6 +68,7 @@ def get_wave_edge(image: np.ndarray, show_: bool=False) -> np.ndarray:
         show_image(img_wave, "waves-skeleton", WAVE_WINDOW_SIZE_WIDTH, WAVE_WINDOW_SIZE_HEIGHT)
     return wave_coord
 
+
 def smooth_wave(wave_coord: np.ndarray, show_: bool=False) -> np.ndarray:
     ''' we use the 'savgol_filter' algorithm to smooth the wave
     :param wave_coord: List's tuples [(y,x), ...] that store wave's coordinates
@@ -81,10 +82,15 @@ def smooth_wave(wave_coord: np.ndarray, show_: bool=False) -> np.ndarray:
     if show_:
         x_ = [x for y, x in wave_coord]
         #fig, ax = plt.subplot()
-        plt.plot(y_, color='gray')
-        plt.plot(x_, yhat, '--', color='blue')
-        plt.legend(('original wave', 'smooth wave'), loc='lower center')
-    return  yhat
+        ax = plt.gca()  # you first need to get the axis handle
+        ax.set_aspect(1.0)  # sets the height to width ratio to 1.0
+        plt.ylim((300, 800))
+        ax.set_ylim(ax.get_ylim()[::-1])
+        plt.plot(y_, '--', color='gray')
+        plt.plot(x_, yhat, color='red')
+        plt.legend(('original wave', 'smooth wave'), loc='upper left')
+    return yhat
+
 
 def find_max_locals(wave_coord: np.ndarray, yhat: np.ndarray, show_: bool=False) -> np.ndarray:
     ''' We find the local maxima using the 'find_peaks' algorithm, with the condition that the local maxima
@@ -105,8 +111,9 @@ def find_max_locals(wave_coord: np.ndarray, yhat: np.ndarray, show_: bool=False)
     if show_:
         x_peaks_new = [x_new for y_new, x_new in peaks_coords[:2]]
         y_peaks_new = [y_new for y_new, x_new in peaks_coords[:2]]
-        plt.plot(x_peaks_new, y_peaks_new, "x", color='red')
+        plt.plot(x_peaks_new, y_peaks_new, "o", color='green')
     return peaks_coords
+
 
 def get_wavelength(peaks_coords: np.ndarray) -> float:
     '''
@@ -118,12 +125,14 @@ def get_wavelength(peaks_coords: np.ndarray) -> float:
     wl = distance_euclidean([y_[0], x_[0]], [y_[1], x_[1]])
     return wl
 
+
 def get_estimated_speed(wavelength: float) -> float:
     '''
     :param wavelength: wave length
     :return: speed in meters per second
     '''
     return math.sqrt((wavelength*GRAVITY)/(2.0*math.pi))
+
 
 def ms_to_nudo(ms: float) -> float:
     '''

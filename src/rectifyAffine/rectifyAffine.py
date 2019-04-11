@@ -45,9 +45,9 @@ class RectifyAffine:
         im = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
 
         # Compute the image of the ROI.
-        _ = compute_roi_v2(im, CAMERA_HEIGHT, f, s, m, o)
-        return []
-        roi, q_, l_ = compute_roi(im, CAMERA_HEIGHT, f, s, m, o)
+        roi, q_, l_ = compute_roi_v2(im, CAMERA_HEIGHT, f, s, m, o)
+
+        # roi, q_, l_ = compute_roi(im, CAMERA_HEIGHT, f, s, m, o)
         roi = cv2.flip(roi, 0)  # horizontal flip image
         if show_:
             # Show results.
