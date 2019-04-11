@@ -140,27 +140,6 @@ def compute_roi(im: np.ndarray, h: float, f: float, s: float, m: Tuple[float, fl
     return roi, q_, l_
 
 
-def find_skeleton3(img):
-    skeleton = np.zeros(img.shape,np.uint8)
-    eroded = np.zeros(img.shape,np.uint8)
-    temp = np.zeros(img.shape,np.uint8)
-
-    _,thresh = cv2.threshold(img,127,255,0)
-
-    kernel = cv2.getStructuringElement(cv2.MORPH_CROSS,(3,3))
-
-    iters = 0
-    while(True):
-        cv2.erode(thresh, kernel, eroded)
-        cv2.dilate(eroded, kernel, temp)
-        cv2.subtract(thresh, temp, temp)
-        cv2.bitwise_or(skeleton, temp, skeleton)
-        thresh, eroded = eroded, thresh # Swap instead of copy
-
-        iters += 1
-        if cv2.countNonZero(thresh) == 0:
-            return (skeleton,iters)
-
 def compute_roi_v2(im: np.ndarray, h: float, f: float, s: float, m: Tuple[float, float], o: Tuple[float, float]) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Return the Region of Interest (ROI) after warping.
     :param im: the input image.
@@ -209,14 +188,12 @@ def compute_roi_v2(im: np.ndarray, h: float, f: float, s: float, m: Tuple[float,
 
     crop_img = im[y0:y0 + q_h, x0:x0 + q_w]
     crop_img = binarized_dilate_image(crop_img, show_=False, bin_cv2=True)
-    skeleton, iters = find_skeleton3(crop_img)
-    print("Iters skeleton: ", iters)
 
     #show_image(im, "ROI-X", CV2_WINDOW_RESIZE_WIDTH, CV2_WINDOW_RESIZE_HEIGHT)
     show_image(crop_img, "ROI-X", q_w, q_h)
-    show_image(skeleton, "ROI-skeleton", q_w, q_h)
 
     return []
+
 
 def read_exif_tags(path_name: str) -> dict:
     """Return the Exif metadata from the given TIFF or JPEG filename.
