@@ -45,8 +45,20 @@ class RectifyAffine:
         im = cv2.cvtColor(im, cv2.COLOR_BGRA2BGR)
 
         # Compute the image of the ROI.
-        roi, q_, l_ = compute_roi_v2(im, CAMERA_HEIGHT, f, s, m, o)
+        crop_img = compute_roi_v2(im, CAMERA_HEIGHT, f, s, m, o)
+        # binary image put into gray-scale image
+        a = np.zeros((crop_img.shape[0], crop_img.shape[1], 3), dtype=im.dtype)
+        a[:, :, 0] = crop_img
+        a[:, :, 1] = crop_img
+        a[:, :, 2] = crop_img
 
+        #  We obtain the coordinates represented by the wave
+        #wave_coord = get_wave_edge(crop_img, show_=False)
+        #get_direction(wave_coord, [], get_q_auto=True, show_ransac=False, show_result=True)
+        self.get_lineV(a, True, True, True, True)
+
+
+        return []
         # roi, q_, l_ = compute_roi(im, CAMERA_HEIGHT, f, s, m, o)
         roi = cv2.flip(roi, 0)  # horizontal flip image
         if show_:

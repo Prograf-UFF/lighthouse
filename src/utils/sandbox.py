@@ -205,8 +205,8 @@ def compute_roi_v2(im: np.ndarray, h: float, f: float, s: float, m: Tuple[float,
     roi = cv2.warpPerspective(im, M, (ROI_SIZE[1] // PIXEL_SIZE[0], ROI_SIZE[0] // PIXEL_SIZE[1]),
                               flags=cv2.INTER_LANCZOS4)
 
-    #show_image(im, "ROI-Y")
-    return roi, q_, l_
+    return crop_img
+    #return roi, q_, l_
 
 
 def read_exif_tags(path_name: str) -> dict:

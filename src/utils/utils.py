@@ -145,7 +145,7 @@ def get_vanishLine_automatic() -> np.ndarray:
     samples_y = []
     fill_samples(P1_XYW, P2_XYW, samples_x, samples_y, img_canny)
     fill_samples(P3_XYW, P4_XYW, samples_x, samples_y, img_canny)
-    line_x, line_y_ransac, _ = ransac(np.array(samples_x), np.array(samples_y), show_=False)
+    line_x, line_y_ransac, _ = ransac_base(np.array(samples_x), np.array(samples_y), show_=False)
 
     return get_Vline_ransac(line_x, line_y_ransac)
 
@@ -170,11 +170,13 @@ def get_direction(img: np.ndarray, img_orig: np.ndarray, get_q_auto: bool=True, 
     samples_y = []
     fill_samples(p1, p2, samples_x, samples_y, img)
 
-    line_X_pri, line_y_ransac_pri, outliers = ransac(np.array(samples_x), np.array(samples_y), show_=show_ransac, figure_num=7)
+    line_X_pri, line_y_ransac_pri, inliers = ransac_base(np.array(samples_x), np.array(samples_y), show_=show_ransac, figure_num=7)
 
+
+    return
     # segunda linea
     # calcular outliers que pertenecen a samples
-    new_sx = []
+    '''new_sx = []
     new_sy = []
     for i in range(0, len(outliers)):
         if outliers[i]:
@@ -190,4 +192,4 @@ def get_direction(img: np.ndarray, img_orig: np.ndarray, get_q_auto: bool=True, 
         plt.plot(line_X_pri, line_y_ransac_pri, color='red', linewidth=1)
         plt.plot(line_X_sec, line_y_ransac_sec, color='green', linewidth=1)
 
-        plt.show()
+        plt.show()'''

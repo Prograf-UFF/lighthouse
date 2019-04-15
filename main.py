@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     rectAffine = RectifyAffine(path=path, image_name=img)
     img_result = rectAffine.image_rectification(show_=True)
-    rectAffine.estimated_speed(img_result)
+    #rectAffine.estimated_speed(img_result)
     #rectAffine.get_lineV(img_result, auto=False, sobel_show=False, show_filtrar_g=False, show_ransac=False)
 
 
