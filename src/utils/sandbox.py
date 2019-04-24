@@ -188,10 +188,10 @@ def compute_roi_v2(im: np.ndarray, h: float, f: float, s: float, m: Tuple[float,
         #cv2.circle(im, (x0, y0), 23, (255, 0, 255), -1)     # Purpura
 
     crop_img = im[y0:y0 + q_h, x0:x0 + q_w]
-    crop_img = binarized_dilate_image(crop_img, show_=False, bin_cv2=True)
+    # crop_img = binarized_dilate_image(crop_img, show_=False, bin_cv2=True)
 
     # binary image put into gray-scale image
-    a = np.zeros((q_h, q_w, 3), dtype=im.dtype)
+    '''a = np.zeros((q_h, q_w, 3), dtype=im.dtype)
     a[:, :, 0] = crop_img
     a[:, :, 1] = crop_img
     a[:, :, 2] = crop_img
@@ -203,9 +203,9 @@ def compute_roi_v2(im: np.ndarray, h: float, f: float, s: float, m: Tuple[float,
 
     M = cv2.getPerspectiveTransform(q_, w_)
     roi = cv2.warpPerspective(im, M, (ROI_SIZE[1] // PIXEL_SIZE[0], ROI_SIZE[0] // PIXEL_SIZE[1]),
-                              flags=cv2.INTER_LANCZOS4)
+                              flags=cv2.INTER_LANCZOS4)'''
 
-    return crop_img
+    return np.array(crop_img), np.array([]), np.array([])
     #return roi, q_, l_
 
 
