@@ -7,7 +7,7 @@ from scipy.signal import savgol_filter
 from scipy.signal import find_peaks
 from operator import itemgetter
 from src.utils.utils import show_image, WAVE_WINDOW_SIZE_WIDTH, WAVE_WINDOW_SIZE_HEIGHT, distance_euclidean
-from ..utils.sobel import sobel_filter, sort_g, cdf, get_xy, filtrar_g
+from ..utils.sobel import sort_g, cdf, get_xy, filtrar_g
 
 
 SAVGOL_WINDOW_SIZE = 197
@@ -27,7 +27,6 @@ def binarized_dilate_image(image: np.ndarray, show_: bool=False, bin_cv2: bool=T
     image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     if bin_cv2:
         _, image_bin = cv2.threshold(image_gray,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-        #_, image_bin = cv2.threshold(image_gray, 70, 255, cv2.THRESH_BINARY)
     else:
         g = image_gray
         sort_g_tupla = sort_g(g, orden=True)
@@ -43,6 +42,7 @@ def binarized_dilate_image(image: np.ndarray, show_: bool=False, bin_cv2: bool=T
     if show_:
         show_image(image_dilate, "binarization", WAVE_WINDOW_SIZE_WIDTH, WAVE_WINDOW_SIZE_HEIGHT)
     return image_dilate
+
 
 def get_wave_edge(image: np.ndarray, show_: bool=False) -> np.ndarray:
     ''' We obtain the coordinates represented by the wave
@@ -76,12 +76,11 @@ def smooth_wave(wave_coord: np.ndarray, show_: bool=False) -> np.ndarray:
     :return: 'Y' coordinates smoothed
     '''
     y_ = [y for y, x in wave_coord]
-    # we use the 'savgol_filter' algorithm to smooth the wave
+    # we use the 'savgol(Savitsky-Golay)_filter' algorithm to smooth the wave
     yhat = savgol_filter(y_, SAVGOL_WINDOW_SIZE, 3, mode='nearest')  # window size 197, polynomial order 3
 
     if show_:
         x_ = [x for y, x in wave_coord]
-        #fig, ax = plt.subplot()
         ax = plt.gca()  # you first need to get the axis handle
         ax.set_aspect(1.0)  # sets the height to width ratio to 1.0
         plt.ylim((300, 800))
@@ -100,7 +99,6 @@ def find_max_locals(wave_coord: np.ndarray, yhat: np.ndarray, show_: bool=False)
     :param show_: if is True show the peaks(local maxima, color red), two first peaks higher
     :return: ordered list of local maxima
     '''
-    y_ = [y for y, x in wave_coord]
     # x_peaks are indices or location where the highest peaks are
     x_peaks, _ = find_peaks(yhat, distance=PEAKS_MIN_DISTANCE)
     y_peaks = [yhat[i] for i in x_peaks]

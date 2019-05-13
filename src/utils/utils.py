@@ -1,17 +1,6 @@
 import matplotlib.pyplot as plt
-import matplotlib.image as mplimg
-from math import pi
-from pylab import plot, ginput, show, axis, imshow, draw
 import numpy as np
-import os
-import pprint
-import sys
-from texttable import Texttable
-from src.utils.ransac import *
-from src.utils.otsu import *
-from src.utils.canny import *
-import copy
-#sys.path.append('/usr/local/lib/python3.6/site-packages')
+from src.utils.ransac import ransac_base
 import cv2
 from typing import List, Tuple
 
@@ -23,34 +12,6 @@ WAVE_WINDOW_SIZE_HEIGHT = 470
 IMG_TO_GET_VLINE = 'src/images/base/img_to_get_vLine.jpg'
 P1_XYW, P2_XYW = [271*4, 507*4, 1], [682*4, 558*4, 1]   # points taken manually
 P3_XYW, P4_XYW = [858*4, 495*4, 1], [1015*4, 549*4, 1]  # points taken manually
-
-
-def my_print(headers: List[str], matrix: np.ndarray, title: str="") -> None:
-    """ beautiful matrix print
-    :param headers: matrix's headers
-    :param matrix: matrix to print
-    :param title: matrix's title
-    :return: None, only print title, headers and matrix
-    """
-    cols_align = []
-    cols_m = matrix.shape[1]
-    rows_m = matrix.shape[0]
-    for i in range(0, cols_m):
-        cols_align.append("l") if i == 0 else cols_align.append("r")
-    content = []
-    headers = [chr(x) for x in range(97, 97 + cols_m)] if headers is None else headers
-    content.append(headers)
-    for i in range(0, rows_m):
-        content.append(matrix[i])
-
-    table = Texttable()
-    table.set_deco(Texttable.HEADER)
-    table.set_header_align(cols_align)
-    table.set_cols_dtype(['a']*cols_m)  # automatic
-    table.set_cols_align(cols_align)
-    table.add_rows(content)
-    print("********************  " + title + "  *********************")
-    print(table.draw())
 
 
 def show_image(image: np.ndarray, title: str='title image', resize_w: int=1200, resize_h: int=800) -> None:
@@ -66,21 +27,6 @@ def show_image(image: np.ndarray, title: str='title image', resize_w: int=1200, 
     cv2.imshow(title, image)
     cv2.waitKey(0)
     cv2.destroyWindow(title)
-
-
-def show_image_properties(img: np.ndarray) -> None:
-    """ show image properties.
-    :param img: the input image
-    :return: printing image properties
-    """
-    header = ["properties", "values"]
-    channels = 1 if len(img.shape) < 3 else img.shape[2]
-    content = [["width", img.shape[1]],
-                    ["height", img.shape[0]],
-                    ["channels", channels],
-                    ["# of pixels", img.size],
-                    ["data type", img.dtype]]
-    my_print(header, np.array(content), "Image Property")
 
 
 def distance_euclidean(v1: np.ndarray, v2: np.ndarray) -> float:
@@ -150,46 +96,3 @@ def get_vanishLine_automatic() -> np.ndarray:
     return get_Vline_ransac(line_x, line_y_ransac)
 
 
-# ---------------- GET DIRECTION --------------
-def get_direction(img: np.ndarray, img_orig: np.ndarray, get_q_auto: bool=True, show_result: bool=True, show_ransac: bool=True) -> None :
-    """
-    :param img: rectified image
-    :param img_orig: original image, the input image
-    :param get_q_auto: if it is true, the quadrant is the whole part of the rectified image
-    :param show_result: plot two lines, lines that represent the trail
-    :param show_ransac: plot RANSAC result
-    :return: None
-    """
-    if not get_q_auto:
-        plt.imshow(img, cmap='gray')
-        plt.suptitle('Clique dois pontos para pegar a linha "V"')
-        p1, p2 = get_quadrante()
-    else:
-        p1, p2 = [0.0, 0.0], [img.shape[1], img.shape[0]]
-    samples_x = []
-    samples_y = []
-    fill_samples(p1, p2, samples_x, samples_y, img)
-
-    line_X_pri, line_y_ransac_pri, inliers = ransac_base(np.array(samples_x), np.array(samples_y), show_=show_ransac, figure_num=7)
-
-
-    return
-    # segunda linea
-    # calcular outliers que pertenecen a samples
-    '''new_sx = []
-    new_sy = []
-    for i in range(0, len(outliers)):
-        if outliers[i]:
-            new_sx.append(samples_x[i])
-            new_sy.append(samples_y[i])
-    line_X_sec, line_y_ransac_sec, _ = ransac(np.array(new_sx), np.array(new_sy), show_=show_ransac, figure_num=8)
-
-    if show_result:
-        plt.figure(9)
-        img_original = copy.copy(img_orig)
-        plt.imshow(img_original, cmap='gray')
-
-        plt.plot(line_X_pri, line_y_ransac_pri, color='red', linewidth=1)
-        plt.plot(line_X_sec, line_y_ransac_sec, color='green', linewidth=1)
-
-        plt.show()'''

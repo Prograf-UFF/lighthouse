@@ -1,10 +1,8 @@
-import sys
 import numpy as np
 from scipy import signal
 import matplotlib.pyplot as plt
 from operator import itemgetter
 from ..utils.utils import show_image
-#sys.path.append('/usr/local/lib/python3.6/site-packages')
 import cv2
 import copy
 
