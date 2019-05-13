@@ -1,4 +1,4 @@
-# COMPUTING VESSEL VELOCITY FROM SINGLE PERSPECTIVE PROJECTION IMAGES
+# Computing Vessel Velocity from Single Perspective Projection Images
 We present an image-based approach to estimate the velocity of moving vessels from their traces on the water surface. Vessels moving at constant heading and speed display a familiar V-shaped pattern which only differs from one to another by the wavelength of their transverse and divergent components. Such wavelength is related to vessel velocity. We use planar homography and natural constraints on the geometry of ships' wake crests to compute vessel velocity from single optical images acquired by conventional cameras.
 
 The approach was developed by Jose Luis Huillca and [Leandro A. F. Fernandes](http://www.ic.uff.br/~laffernandes).
