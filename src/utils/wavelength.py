@@ -20,7 +20,7 @@ def binarized_dilate_image(image: np.ndarray, show_: bool=False, bin_cv2: bool=T
     ''' binarize the image and apply dilation so that the curves are not very thick
     :param image: image input in BGR
     :param show_: if is True show the binarization and dilate result
-    :param bin_cv2:
+    :param bin_cv2: if is true, opencv's binarizationis used
     :return: binarized and dilated image
     '''
 
@@ -83,7 +83,7 @@ def smooth_wave(wave_coord: np.ndarray, show_: bool=False) -> np.ndarray:
         x_ = [x for y, x in wave_coord]
         ax = plt.gca()  # you first need to get the axis handle
         ax.set_aspect(1.0)  # sets the height to width ratio to 1.0
-        plt.ylim((300, 800))
+        plt.ylim((300, 900))
         ax.set_ylim(ax.get_ylim()[::-1])
         plt.plot(y_, '--', color='gray')
         plt.plot(x_, yhat, color='red')

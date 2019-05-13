@@ -48,7 +48,7 @@ class RectifyAffine:
         :return: speed of the boat in knots
         """
         # binarize the image and apply dilation so that the curves are not very thick
-        image_dilate = binarized_dilate_image(image, show_=True, bin_cv2=True)
+        image_dilate = binarized_dilate_image(image, show_=False, bin_cv2=True)
 
         #  We obtain the coordinates represented by the wave
         wave_coord = get_wave_edge(image_dilate, show_=False)

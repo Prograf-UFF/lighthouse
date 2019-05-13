@@ -1,0 +1,1 @@
+python test.py --path src/images/images_bordas/ --image_name DSC_000016608
